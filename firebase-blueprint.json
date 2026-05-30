@@ -1,0 +1,71 @@
+{
+  "entities": {
+    "Project": {
+      "title": "Project",
+      "description": "A video project in the automation studio",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "workspaceId": { "type": "string" },
+        "date": { "type": "number" },
+        "title": { "type": "string" },
+        "originalTitle": { "type": "string" },
+        "youtubeUrl": { "type": "string" },
+        "status": { "type": "string", "enum": ["Pendiente", "En Proceso", "Hecho"] },
+        "originalTranscript": { "type": "string" },
+        "script": { "type": "string" },
+        "enhancedScript": { "type": "string" },
+        "voice": { "type": "string" },
+        "language": { "type": "string" },
+        "audioUrl": { "type": "string" },
+        "timestamps": { "type": "string" },
+        "packaging": { "type": "string" },
+        "visualPrompts": { "type": "string" }
+      },
+      "required": ["id", "userId", "workspaceId", "date", "title"]
+    },
+    "Niche": {
+      "title": "Niche",
+      "description": "A niche configuration for the automation studio",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "name": { "type": "string" },
+        "tone": { "type": "string" },
+        "prompt": { "type": "string" },
+        "voiceInstructions": { "type": "string" },
+        "visualPromptInstructions": { "type": "string" },
+        "filterInstructions": { "type": "string" }
+      },
+      "required": ["id", "userId", "name", "prompt"]
+    },
+    "User": {
+      "title": "User",
+      "description": "User profile with global settings",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "email": { "type": "string" },
+        "globalDirectives": { "type": "string" },
+        "createdAt": { "type": "number" }
+      },
+      "required": ["uid", "email"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "Global user data and settings"
+    },
+    "/users/{userId}/projects/{projectId}": {
+      "schema": "Project",
+      "description": "Collection of projects owned by the user"
+    },
+    "/users/{userId}/niches/{nicheId}": {
+      "schema": "Niche",
+      "description": "Custom niches defined by the user"
+    }
+  }
+}

@@ -1,0 +1,2323 @@
+
+Text-to-speech generation (TTS) &nbsp;|&nbsp; Gemini API &nbsp;|&nbsp; Google AI for Developers
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Text-to-speech generation (TTS)"
+  }
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [{
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Gemini API",
+      "item": "https://ai.google.dev/gemini-api"
+    },{
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Text-to-speech generation (TTS)",
+      "item": "https://ai.google.dev/gemini-api/docs/speech-generation"
+    }]
+  }
+      Skip to main content
+/
+English
+Deutsch
+Español – América Latina
+Français
+Indonesia
+Italiano
+Polski
+Português – Brasil
+Shqip
+Tiếng Việt
+Türkçe
+Русский
+עברית
+العربيّة
+فارسی
+हिंदी
+বাংলা
+ภาษาไทย
+中文 – 简体
+中文 – 繁體
+日本語
+한국어
+  Get API key
+  Cookbook
+  Community
+Sign in
+    Docs
+    API reference
+      Gemini API
+      Docs
+      API reference
+      Get API key
+      Cookbook
+      Community
+Get started
+Overview
+Quickstart
+API keys
+Libraries
+Pricing
+Interactions API
+Coding agent setup
+Models
+All models
+Gemini 3
+Nano Banana
+Veo
+Lyria 3
+Lyria RealTime
+Imagen
+Text-to-speech
+Embeddings
+Robotics
+Core capabilities
+Text
+Image
+Image generation 🍌
+Image understanding
+Video
+Video generation
+Video understanding
+Documents
+Speech and audio
+Speech generation
+Audio understanding
+Thinking
+Thinking
+Thought signatures
+Structured outputs
+Function calling
+Long context
+Agents
+Overview
+Deep Research Agent
+Tools
+Overview
+Google Search
+Google Maps
+Code execution
+URL context
+Computer Use
+File Search
+Combine Tools and Function calling
+Live API
+Overview
+Get started
+Get started using the GenAI SDK
+Get started using raw WebSockets
+Capabilities
+Tool use
+Session management
+Ephemeral tokens
+Best practices
+Optimization
+Overview
+Batch API
+Flex inference
+Priority inference
+Context caching
+Guides
+File input
+Input methods
+Files API
+OpenAI compatibility
+Media resolution
+Token counting
+Prompt engineering
+Logs and datasets
+Get started with logs
+Data logging and sharing
+Safety
+Safety settings
+Safety guidance
+Frameworks
+LangChain &amp; LangGraph
+CrewAI
+LlamaIndex
+Vercel AI SDK
+Temporal
+Resources
+Release notes
+Deprecations
+Rate limits
+Billing info
+Migrate to Gen AI SDK
+API troubleshooting
+Partner and library integrations
+Google AI Studio
+Quickstart
+Vibe code in Build mode
+Developing Full-Stack Apps
+Troubleshooting
+Access for Workspace users
+Google Cloud Platform
+VertexAI Gemini API
+OAuth authentication
+Policies
+Terms of service
+Available regions
+Abuse monitoring
+Feedback information
+      /* Styles inlined from /site-assets/css/pricing.css */
+/* Pricing table styles */
+.pricing-table {
+  border-collapse: separate;
+  border-spacing: 0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+.pricing-table th {
+  background-color: #f2f2f2;
+  text-align: left;
+  padding: 8px;
+}
+/* Set the second and after (of three total) columns to 35% width. */
+.pricing-table th:nth-child(n+2) {
+  width: 35%;
+}
+/* These should use theme colours for light too, so we don't
+ * need an override. */
+.color-scheme--dark .pricing-table th {
+  background-color: var(--devsite-ref-palette--grey800);
+}
+.pricing-table td {
+    padding: 8px;
+}
+.free-tier {
+  background-color: none;
+}
+.paid-tier {
+  background-color: #eff5ff;
+}
+.color-scheme--dark .paid-tier {
+  background-color: var(--devsite-background-5);
+}
+.pricing-table th:first-child {
+  border-top-left-radius: 8px;
+}
+.pricing-table th:last-child {
+  border-top-right-radius: 8px;
+}
+.pricing-table tr:last-child td:first-child {
+  border-bottom-left-radius: 8px;
+}
+.pricing-table tr:last-child td:last-child {
+  border-bottom-right-radius: 8px;
+}
+.pricing-container {
+    max-width: 1100px;
+    width: 100%;
+}
+.pricing-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    justify-content: center;
+}
+.pricing-card {
+    background-color: #ffffff;
+    border-radius: 16px; 
+    border: 1px solid #dadce0;
+    padding: 2.5rem;
+    display: flex;
+    flex-direction: column; 
+    transition: all 0.3s ease;
+    position: relative; 
+}
+.color-scheme--dark .pricing-card {
+  background-color: var(--devsite-ref-palette--grey800);
+}
+.plan-name {
+    font-size: 1.75rem;
+    font-weight: 700; 
+    margin: 0 0 0.5rem 0;
+}
+.plan-description {
+    font-size: 1rem;
+    color: #5f6368;
+    margin: 0 0 2.5rem 0;
+    line-height: 1.5;
+    min-height: 80px;
+}
+.color-scheme--dark .plan-description {
+  color: var(--devsite-primary-text-color);
+}
+.plan-description a {
+    color: #1a73e8;
+    text-decoration: none;
+}
+.plan-description a:hover {
+    text-decoration: underline;
+}
+.features {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 2rem 0;
+}
+.features li {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 1.25rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    color: #3c4043;
+}
+.features li.feature-description {
+    display: block;
+    color: #5f6368;
+}
+.features li a {
+    color: #1a73e8;
+    text-decoration: none;
+    margin-left: 4px;
+}
+.features li .material-symbols-outlined {
+    font-size: 24px;
+    margin-right: 0.75rem;
+    color: #3c4043;
+    margin-top: 2px;
+}
+.color-scheme--dark .features li,
+.features li .material-symbols-outlined {
+  color: var(--devsite-primary-text-color);
+}
+.cta-button {
+    display: inline-block;
+    text-align: center;
+    text-decoration: none;
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    box-sizing: border-box;
+    border: 1px solid #dadce0;
+    background-color: #fff;
+    color: #1a73e8;
+    margin-top: auto;
+}
+.cta-button:hover {
+    background-color: rgba(66, 133, 244, 0.05); 
+}
+.pricing-card.recommended {
+    border: 2px solid #1a73e8;
+    overflow: hidden; 
+}
+.pricing-card.recommended::before {
+    position: absolute;
+    top: 22px;
+    right: -32px;
+    width: 120px;
+    height: 30px;
+    background-color: #1a73e8;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 0.8rem;
+    font-weight: 600;
+    transform: rotate(45deg);
+    z-index: 1; 
+}
+.heading-group {
+    display: flex;
+    flex-direction: column;
+}
+.heading-group h2 {
+    margin-bottom: 0;
+}
+.heading-group em {
+    margin-top: 0;
+}
+.row-gray {
+  background-color: #f2f2f2; /* Light gray */
+  color: #666666;
+  font-style: italic;
+}
+.row-gray code {
+  font-style: italic;
+}
+Gemini Deep Research
+ is now available in preview with collaborative planning, visualization, MCP support, and more.
+          Home
+          Gemini API
+          Docs
+    Send feedback
+      Text-to-speech generation (TTS)
+The Gemini API can transform text input into single speaker or multi-speaker
+audio using Gemini text-to-speech (TTS) generation capabilities.
+Text-to-speech (TTS) generation is 
+controllable
+,
+meaning you can use natural language to structure interactions and guide the
+style
+, 
+accent
+, 
+pace
+, and 
+tone
+ of the audio.
+Try in Google AI Studio
+The TTS capability differs from speech generation provided through the
+Live API
+, which is designed for interactive,
+unstructured audio, and multimodal inputs and outputs. While the Live API excels
+in dynamic conversational contexts, TTS through the Gemini API
+is tailored for scenarios that require exact text recitation with fine-grained
+control over style and sound, such as podcast or audiobook generation.
+This guide shows you how to generate single-speaker and multi-speaker audio from
+text.
+Preview:
+ Gemini text-to-speech (TTS) is in
+Preview
+.
+Before you begin
+Ensure you use a Gemini model variant with Gemini text-to-speech (TTS)
+capabilities, as listed in the 
+Supported models
+ section. For optimal
+results, consider which model best fits your specific use case.
+You may find it useful to 
+test the Gemini TTS models in AI Studio
+ before you start building.
+Note:
+ TTS models accept text-only inputs and produce audio-only outputs. For a
+complete list of restrictions specific to TTS models, review the 
+Limitations
+ section.
+Single-speaker TTS
+To convert text to single-speaker audio, set the response modality to &quot;audio&quot;,
+and pass a 
+SpeechConfig
+ object with 
+VoiceConfig
+ set.
+You&#39;ll need to choose a voice name from the prebuilt 
+output voices
+.
+This example saves the output audio from the model in a wave file:
+Python
+from
+google
+import
+genai
+from
+google.genai
+import
+types
+import
+wave
+# Set up the wave file to save the output:
+def
+wave_file
+(
+filename
+,
+pcm
+,
+channels
+=
+1
+,
+rate
+=
+24000
+,
+sample_width
+=
+2
+):
+with
+wave
+.
+open
+(
+filename
+,
+"wb"
+)
+as
+wf
+:
+wf
+.
+setnchannels
+(
+channels
+)
+wf
+.
+setsampwidth
+(
+sample_width
+)
+wf
+.
+setframerate
+(
+rate
+)
+wf
+.
+writeframes
+(
+pcm
+)
+client
+=
+genai
+.
+Client
+()
+response
+=
+client
+.
+models
+.
+generate_content
+(
+model
+=
+"gemini-3.1-flash-tts-preview"
+,
+contents
+=
+"Say cheerfully: Have a wonderful day!"
+,
+config
+=
+types
+.
+GenerateContentConfig
+(
+response_modalities
+=
+[
+"AUDIO"
+],
+speech_config
+=
+types
+.
+SpeechConfig
+(
+voice_config
+=
+types
+.
+VoiceConfig
+(
+prebuilt_voice_config
+=
+types
+.
+PrebuiltVoiceConfig
+(
+voice_name
+=
+'Kore'
+,
+)
+)
+),
+)
+)
+data
+=
+response
+.
+candidates
+[
+0
+]
+.
+content
+.
+parts
+[
+0
+]
+.
+inline_data
+.
+data
+file_name
+=
+'out.wav'
+wave_file
+(
+file_name
+,
+data
+)
+# Saves the file to current directory
+For more code samples, refer to the
+     "TTS - Get Started" file in the cookbooks repository:
+View
+        on GitHub
+JavaScript
+import
+{
+GoogleGenAI
+}
+from
+'@google/genai'
+;
+import
+wav
+from
+'wav'
+;
+async
+function
+saveWaveFile
+(
+filename
+,
+pcmData
+,
+channels
+=
+1
+,
+rate
+=
+24000
+,
+sampleWidth
+=
+2
+,
+)
+{
+return
+new
+Promise
+((
+resolve
+,
+reject
+)
+=
+&gt;
+{
+const
+writer
+=
+new
+wav
+.
+FileWriter
+(
+filename
+,
+{
+channels
+,
+sampleRate
+:
+rate
+,
+bitDepth
+:
+sampleWidth
+*
+8
+,
+});
+writer
+.
+on
+(
+'finish'
+,
+resolve
+);
+writer
+.
+on
+(
+'error'
+,
+reject
+);
+writer
+.
+write
+(
+pcmData
+);
+writer
+.
+end
+();
+});
+}
+async
+function
+main
+()
+{
+const
+ai
+=
+new
+GoogleGenAI
+({});
+const
+response
+=
+await
+ai
+.
+models
+.
+generateContent
+({
+model
+:
+"gemini-3.1-flash-tts-preview"
+,
+contents
+:
+[{
+parts
+:
+[{
+text
+:
+'Say cheerfully: Have a wonderful day!'
+}]
+}],
+config
+:
+{
+responseModalities
+:
+[
+'AUDIO'
+],
+speechConfig
+:
+{
+voiceConfig
+:
+{
+prebuiltVoiceConfig
+:
+{
+voiceName
+:
+'Kore'
+},
+},
+},
+},
+});
+const
+data
+=
+response
+.
+candidates
+?
+.[
+0
+]
+?
+.
+content
+?
+.
+parts
+?
+.[
+0
+]
+?
+.
+inlineData
+?
+.
+data
+;
+const
+audioBuffer
+=
+Buffer
+.
+from
+(
+data
+,
+'base64'
+);
+const
+fileName
+=
+'out.wav'
+;
+await
+saveWaveFile
+(
+fileName
+,
+audioBuffer
+);
+}
+await
+main
+();
+REST
+curl
+"https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-tts-preview:generateContent"
+\
+-H
+"x-goog-api-key: 
+$GEMINI_API_KEY
+"
+\
+-X
+POST
+\
+-H
+"Content-Type: application/json"
+\
+-d
+'{
+        "contents": [{
+          "parts":[{
+            "text": "Say cheerfully: Have a wonderful day!"
+          }]
+        }],
+        "generationConfig": {
+          "responseModalities": ["AUDIO"],
+          "speechConfig": {
+            "voiceConfig": {
+              "prebuiltVoiceConfig": {
+                "voiceName": "Kore"
+              }
+            }
+          }
+        },
+        "model": "gemini-3.1-flash-tts-preview",
+    }'
+|
+jq
+-r
+'.candidates[0].content.parts[0].inlineData.data'
+|
+\
+base64
+--decode
+&gt;out.pcm
+# You may need to install ffmpeg.
+ffmpeg
+-f
+s16le
+-ar
+24000
+-ac
+1
+-i
+out.pcm
+out.wav
+Multi-speaker TTS
+For multi-speaker audio, you&#39;ll need a 
+MultiSpeakerVoiceConfig
+ object with
+each speaker (up to 2) configured as a 
+SpeakerVoiceConfig
+.
+You&#39;ll need to define each 
+speaker
+ with the same names used in the
+prompt
+:
+Python
+from
+google
+import
+genai
+from
+google.genai
+import
+types
+import
+wave
+# Set up the wave file to save the output:
+def
+wave_file
+(
+filename
+,
+pcm
+,
+channels
+=
+1
+,
+rate
+=
+24000
+,
+sample_width
+=
+2
+):
+with
+wave
+.
+open
+(
+filename
+,
+"wb"
+)
+as
+wf
+:
+wf
+.
+setnchannels
+(
+channels
+)
+wf
+.
+setsampwidth
+(
+sample_width
+)
+wf
+.
+setframerate
+(
+rate
+)
+wf
+.
+writeframes
+(
+pcm
+)
+client
+=
+genai
+.
+Client
+()
+prompt
+=
+"""TTS the following conversation between Joe and Jane:
+         Joe: How's it going today Jane?
+         Jane: Not too bad, how about you?"""
+response
+=
+client
+.
+models
+.
+generate_content
+(
+model
+=
+"gemini-3.1-flash-tts-preview"
+,
+contents
+=
+prompt
+,
+config
+=
+types
+.
+GenerateContentConfig
+(
+response_modalities
+=
+[
+"AUDIO"
+],
+speech_config
+=
+types
+.
+SpeechConfig
+(
+multi_speaker_voice_config
+=
+types
+.
+MultiSpeakerVoiceConfig
+(
+speaker_voice_configs
+=
+[
+types
+.
+SpeakerVoiceConfig
+(
+speaker
+=
+'Joe'
+,
+voice_config
+=
+types
+.
+VoiceConfig
+(
+prebuilt_voice_config
+=
+types
+.
+PrebuiltVoiceConfig
+(
+voice_name
+=
+'Kore'
+,
+)
+)
+),
+types
+.
+SpeakerVoiceConfig
+(
+speaker
+=
+'Jane'
+,
+voice_config
+=
+types
+.
+VoiceConfig
+(
+prebuilt_voice_config
+=
+types
+.
+PrebuiltVoiceConfig
+(
+voice_name
+=
+'Puck'
+,
+)
+)
+),
+]
+)
+)
+)
+)
+data
+=
+response
+.
+candidates
+[
+0
+]
+.
+content
+.
+parts
+[
+0
+]
+.
+inline_data
+.
+data
+file_name
+=
+'out.wav'
+wave_file
+(
+file_name
+,
+data
+)
+# Saves the file to current directory
+JavaScript
+import
+{
+GoogleGenAI
+}
+from
+'@google/genai'
+;
+import
+wav
+from
+'wav'
+;
+async
+function
+saveWaveFile
+(
+filename
+,
+pcmData
+,
+channels
+=
+1
+,
+rate
+=
+24000
+,
+sampleWidth
+=
+2
+,
+)
+{
+return
+new
+Promise
+((
+resolve
+,
+reject
+)
+=
+&gt;
+{
+const
+writer
+=
+new
+wav
+.
+FileWriter
+(
+filename
+,
+{
+channels
+,
+sampleRate
+:
+rate
+,
+bitDepth
+:
+sampleWidth
+*
+8
+,
+});
+writer
+.
+on
+(
+'finish'
+,
+resolve
+);
+writer
+.
+on
+(
+'error'
+,
+reject
+);
+writer
+.
+write
+(
+pcmData
+);
+writer
+.
+end
+();
+});
+}
+async
+function
+main
+()
+{
+const
+ai
+=
+new
+GoogleGenAI
+({});
+const
+prompt
+=
+`TTS the following conversation between Joe and Jane:
+         Joe: How's it going today Jane?
+         Jane: Not too bad, how about you?`
+;
+const
+response
+=
+await
+ai
+.
+models
+.
+generateContent
+({
+model
+:
+"gemini-3.1-flash-tts-preview"
+,
+contents
+:
+[{
+parts
+:
+[{
+text
+:
+prompt
+}]
+}],
+config
+:
+{
+responseModalities
+:
+[
+'AUDIO'
+],
+speechConfig
+:
+{
+multiSpeakerVoiceConfig
+:
+{
+speakerVoiceConfigs
+:
+[
+{
+speaker
+:
+'Joe'
+,
+voiceConfig
+:
+{
+prebuiltVoiceConfig
+:
+{
+voiceName
+:
+'Kore'
+}
+}
+},
+{
+speaker
+:
+'Jane'
+,
+voiceConfig
+:
+{
+prebuiltVoiceConfig
+:
+{
+voiceName
+:
+'Puck'
+}
+}
+}
+]
+}
+}
+}
+});
+const
+data
+=
+response
+.
+candidates
+?
+.[
+0
+]
+?
+.
+content
+?
+.
+parts
+?
+.[
+0
+]
+?
+.
+inlineData
+?
+.
+data
+;
+const
+audioBuffer
+=
+Buffer
+.
+from
+(
+data
+,
+'base64'
+);
+const
+fileName
+=
+'out.wav'
+;
+await
+saveWaveFile
+(
+fileName
+,
+audioBuffer
+);
+}
+await
+main
+();
+REST
+curl
+"https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-tts-preview:generateContent"
+\
+-H
+"x-goog-api-key: 
+$GEMINI_API_KEY
+"
+\
+-X
+POST
+\
+-H
+"Content-Type: application/json"
+\
+-d
+'{
+  "contents": [{
+    "parts":[{
+      "text": "TTS the following conversation between Joe and Jane:
+                Joe: Hows it going today Jane?
+                Jane: Not too bad, how about you?"
+    }]
+  }],
+  "generationConfig": {
+    "responseModalities": ["AUDIO"],
+    "speechConfig": {
+      "multiSpeakerVoiceConfig": {
+        "speakerVoiceConfigs": [{
+            "speaker": "Joe",
+            "voiceConfig": {
+              "prebuiltVoiceConfig": {
+                "voiceName": "Kore"
+              }
+            }
+          }, {
+            "speaker": "Jane",
+            "voiceConfig": {
+              "prebuiltVoiceConfig": {
+                "voiceName": "Puck"
+              }
+            }
+          }]
+      }
+    }
+  },
+  "model": "gemini-3.1-flash-tts-preview",
+}'
+|
+jq
+-r
+'.candidates[0].content.parts[0].inlineData.data'
+|
+\
+base64
+--decode
+ &gt; 
+out.pcm
+# You may need to install ffmpeg.
+ffmpeg
+-f
+s16le
+-ar
+24000
+-ac
+1
+-i
+out.pcm
+out.wav
+Controlling speech style with prompts
+You can control style, tone, accent, and pace using natural language prompts
+or 
+audio tags
+ for both single- and multi-speaker TTS.
+For example, in a single-speaker prompt, you can say:
+Say in an spooky voice:
+&#34;By the pricking of my thumbs... [short pause]
+[whisper] Something wicked this way comes&#34;
+In a multi-speaker prompt, provide the model with each speaker&#39;s name and
+corresponding transcript. You can also provide guidance for each speaker
+individually:
+Make Speaker1 sound tired and bored, and Speaker2 sound excited and happy:
+Speaker1: So... [yawn] what&#39;s on the agenda today?
+Speaker2: You&#39;re never going to guess!
+Try using a 
+voice option
+ that corresponds to the style or emotion you
+want to convey, to emphasize it even more. In the previous prompt, for example,
+Enceladus
+&#39;s breathiness might emphasize &quot;tired&quot; and &quot;bored&quot;, while
+Puck
+&#39;s upbeat tone could complement &quot;excited&quot; and &quot;happy&quot;.
+Tip:
+ The 
+Voice Library
+applet in Google AI Studio is a great way to try out speech styles and voices
+with Gemini TTS.
+Generating a prompt to convert to audio
+The TTS models only output audio, but you can use
+other models
+ to generate a transcript first,
+then pass that transcript to the TTS model to read aloud.
+Python
+from
+google
+import
+genai
+from
+google.genai
+import
+types
+client
+=
+genai
+.
+Client
+()
+transcript
+=
+client
+.
+models
+.
+generate_content
+(
+model
+=
+"gemini-3-flash-preview"
+,
+contents
+=
+"""Generate a short transcript around 100 words that reads
+            like it was clipped from a podcast by excited herpetologists.
+            The hosts names are Dr. Anya and Liam."""
+)
+.
+text
+response
+=
+client
+.
+models
+.
+generate_content
+(
+model
+=
+"gemini-3.1-flash-tts-preview"
+,
+contents
+=
+transcript
+,
+config
+=
+types
+.
+GenerateContentConfig
+(
+response_modalities
+=
+[
+"AUDIO"
+],
+speech_config
+=
+types
+.
+SpeechConfig
+(
+multi_speaker_voice_config
+=
+types
+.
+MultiSpeakerVoiceConfig
+(
+speaker_voice_configs
+=
+[
+types
+.
+SpeakerVoiceConfig
+(
+speaker
+=
+'Dr. Anya'
+,
+voice_config
+=
+types
+.
+VoiceConfig
+(
+prebuilt_voice_config
+=
+types
+.
+PrebuiltVoiceConfig
+(
+voice_name
+=
+'Kore'
+,
+)
+)
+),
+types
+.
+SpeakerVoiceConfig
+(
+speaker
+=
+'Liam'
+,
+voice_config
+=
+types
+.
+VoiceConfig
+(
+prebuilt_voice_config
+=
+types
+.
+PrebuiltVoiceConfig
+(
+voice_name
+=
+'Puck'
+,
+)
+)
+),
+]
+)
+)
+)
+)
+# ...Code to handle audio output
+JavaScript
+import
+{
+GoogleGenAI
+}
+from
+"@google/genai"
+;
+const
+ai
+=
+new
+GoogleGenAI
+({});
+async
+function
+main
+()
+{
+const
+transcript
+=
+await
+ai
+.
+models
+.
+generateContent
+({
+model
+:
+"gemini-3-flash-preview"
+,
+contents
+:
+"Generate a short transcript around 100 words that reads like it was clipped from a podcast by excited herpetologists. The hosts names are Dr. Anya and Liam."
+,
+})
+const
+response
+=
+await
+ai
+.
+models
+.
+generateContent
+({
+model
+:
+"gemini-3.1-flash-tts-preview"
+,
+contents
+:
+transcript
+,
+config
+:
+{
+responseModalities
+:
+[
+'AUDIO'
+],
+speechConfig
+:
+{
+multiSpeakerVoiceConfig
+:
+{
+speakerVoiceConfigs
+:
+[
+{
+speaker
+:
+"Dr. Anya"
+,
+voiceConfig
+:
+{
+prebuiltVoiceConfig
+:
+{
+voiceName
+:
+"Kore"
+},
+}
+},
+{
+speaker
+:
+"Liam"
+,
+voiceConfig
+:
+{
+prebuiltVoiceConfig
+:
+{
+voiceName
+:
+"Puck"
+},
+}
+}
+]
+}
+}
+}
+});
+}
+// ..JavaScript code for exporting .wav file for output audio
+await
+main
+();
+Voice options
+TTS models support the following 30 voice options in the 
+voice_name
+ field:
+Zephyr
+ -- 
+Bright
+Puck
+ -- 
+Upbeat
+Charon
+ -- 
+Informative
+Kore
+ -- 
+Firm
+Fenrir
+ -- 
+Excitable
+Leda
+ -- 
+Youthful
+Orus
+ -- 
+Firm
+Aoede
+ -- 
+Breezy
+Callirrhoe
+ -- 
+Easy-going
+Autonoe
+ -- 
+Bright
+Enceladus
+ -- 
+Breathy
+Iapetus
+ -- 
+Clear
+Umbriel
+ -- 
+Easy-going
+Algieba
+ -- 
+Smooth
+Despina
+ -- 
+Smooth
+Erinome
+ -- 
+Clear
+Algenib
+ -- 
+Gravelly
+Rasalgethi
+ -- 
+Informative
+Laomedeia
+ -- 
+Upbeat
+Achernar
+ -- 
+Soft
+Alnilam
+ -- 
+Firm
+Schedar
+ -- 
+Even
+Gacrux
+ -- 
+Mature
+Pulcherrima
+ -- 
+Forward
+Achird
+ -- 
+Friendly
+Zubenelgenubi
+ -- 
+Casual
+Vindemiatrix
+ -- 
+Gentle
+Sadachbia
+ -- 
+Lively
+Sadaltager
+ -- 
+Knowledgeable
+Sulafat
+ -- 
+Warm
+You can hear all the voice options in
+AI Studio
+.
+Supported languages
+The TTS models detect the input language automatically. The following languages
+are supported:
+Language
+BCP-47 Code
+Language
+BCP-47 Code
+Arabic
+ar
+Filipino
+fil
+Bangla
+bn
+Finnish
+fi
+Dutch
+nl
+Galician
+gl
+English
+en
+Georgian
+ka
+French
+fr
+Greek
+el
+German
+de
+Gujarati
+gu
+Hindi
+hi
+Haitian Creole
+ht
+Indonesian
+id
+Hebrew
+he
+Italian
+it
+Hungarian
+hu
+Japanese
+ja
+Icelandic
+is
+Korean
+ko
+Javanese
+jv
+Marathi
+mr
+Kannada
+kn
+Polish
+pl
+Konkani
+kok
+Portuguese
+pt
+Lao
+lo
+Romanian
+ro
+Latin
+la
+Russian
+ru
+Latvian
+lv
+Spanish
+es
+Lithuanian
+lt
+Tamil
+ta
+Luxembourgish
+lb
+Telugu
+te
+Macedonian
+mk
+Thai
+th
+Maithili
+mai
+Turkish
+tr
+Malagasy
+mg
+Ukrainian
+uk
+Malay
+ms
+Vietnamese
+vi
+Malayalam
+ml
+Afrikaans
+af
+Mongolian
+mn
+Albanian
+sq
+Nepali
+ne
+Amharic
+am
+Norwegian, Bokmål
+nb
+Armenian
+hy
+Norwegian, Nynorsk
+nn
+Azerbaijani
+az
+Odia
+or
+Basque
+eu
+Pashto
+ps
+Belarusian
+be
+Persian
+fa
+Bulgarian
+bg
+Punjabi
+pa
+Burmese
+my
+Serbian
+sr
+Catalan
+ca
+Sindhi
+sd
+Cebuano
+ceb
+Sinhala
+si
+Chinese, Mandarin
+cmn
+Slovak
+sk
+Croatian
+hr
+Slovenian
+sl
+Czech
+cs
+Swahili
+sw
+Danish
+da
+Swedish
+sv
+Estonian
+et
+Urdu
+ur
+Supported models
+Model
+Single speaker
+Multispeaker
+Gemini 3.1 Flash TTS Preview
+✔️
+✔️
+Gemini 2.5 Flash Preview TTS
+✔️
+✔️
+Gemini 2.5 Pro Preview TTS
+✔️
+✔️
+Prompting guide
+The 
+Gemini Native Audio Generation Text-to-Speech (TTS)
+ model differentiates
+itself from traditional TTS models by using a large language model that
+knows 
+not only what to say, but also how to say it
+.
+Out of the box, the model will natively interpret a transcript and determine how
+your words should be delivered. Simple transcripts without any additional
+prompting sound natural. But Gemini TTS also comes with tools you can use to
+steer it.
+The purpose of this guide is to offer fundamental direction and spark ideas when
+developing audio experiences. We&#39;ll start with 
+Tags
+ for quick inline
+control, and then explore advanced 
+Prompting structures
+ for full performance
+direction.
+Audio tags
+Tags are inline modifiers like 
+[whispers]
+ or 
+[laughs]
+ that give you granular
+control over the delivery. You can use them to change the tone, pace, and
+emotional vibe of a line or section of the transcript. You can also use them to
+add interjections and a few other non-verbal sounds to the performance, like
+[cough]
+, 
+[sighs]
+ or 
+[gasp]
+.
+There is no exhaustive list on what tags do and don&#39;t work, we recommend
+experimenting with different emotions and expressions to see how the output
+changes.
+If your transcript is not in English, for best results we recommend that you
+still use English audio tags.
+Be creative with audio tags
+To show the kind of variability you can get with audio tags, here are a set of
+examples that each say the same thing, but the delivery changes based on the
+tags used.
+You can change the emphasis of the delivery by adding tags at the start of a
+line to make the speaker excited, bored, or reluctant:
+[excitedly]
+ Hey there, I&#39;m a new text to speech model, and I can say things
+in many different ways. How can I help you today?
+[bored]
+ Hey there, I&#39;m a new text to speech model…
+[reluctantly]
+ Hey there, I&#39;m a new text to speech model…
+Tags can also be used to change the pace of the delivery, or to combine pace
+with emphasis:
+[very fast]
+ Hey there, I&#39;m a new text to speech model…
+[very slow]
+ Hey there, I&#39;m a new text to speech model…
+[sarcastically, one painfully slow word at a time]
+ Hey there, I&#39;m a new text
+to speech model…
+You also have precise control over specific sections, meaning you can whisper
+one part and shout another.
+[whispers]
+ Hey there, I&#39;m a new text to speech model, 
+[shouting]
+ and I can
+say things in many different ways. 
+[whispers]
+ How can I help you today
+You can also experiment with any creative idea you want:
+[like a cartoon dog]
+ Hey there, I&#39;m a new text to speech model…
+[like dracula]
+ Hey there, I&#39;m a new text to speech model…
+Commonly used tags include:
+[amazed]
+[crying]
+[curious]
+[excited]
+[sighs]
+[gasp]
+[giggles]
+[laughs]
+[mischievously]
+[panicked]
+[sarcastic]
+[serious]
+[shouting]
+[tired]
+[trembling]
+[whispers]
+Tags give quick and easy control over the delivery of your transcript. For even
+more control, you can combine them with a context prompt to set the overall tone
+ and vibe of the performance.
+Advanced prompting
+You can think of an advanced prompt as a system instruction for the model to
+follow. It&#39;s a way to give the model more context and control over the
+performance.
+A robust prompt ideally includes the following elements that come together to
+craft a great performance:
+Audio Profile
+ - Establishes a persona for the voice, defining a character
+identity, archetype and any other characteristics like age, background etc.
+Scene
+ - Sets the stage. Describes both the physical environment and the
+&quot;vibe&quot;.
+Director&#39;s Notes
+ - Performance guidance where you can break down which
+instructions are important for your virtual talent to take note of. Examples are
+style, breathing, pacing, articulation and accent.
+Sample context
+ - Gives the model a contextual starting point, so your
+virtual actor enters the scene you set up naturally.
+Transcript
+ - The text that the model will speak out. For best performance,
+remember that the transcript topic and writing style should correlate to the
+directions you are giving.
+Audio tags
+ - Modifiers you can put into a transcript to change how that
+part of the text is delivered, such as 
+[whispers]
+ or 
+[shouting]
+.
+Note:
+ Have Gemini help you build your prompt, just give it a blank outline of
+the format below and ask it to sketch out a character for you.
+Example full prompt:
+# AUDIO PROFILE: Jaz R.
+## "The Morning Hype"
+## THE SCENE: The London Studio
+It is 10:00 PM in a glass-walled studio overlooking the moonlit London skyline,
+but inside, it is blindingly bright. The red "ON AIR" tally light is blazing.
+Jaz is standing up, not sitting, bouncing on the balls of their heels to the
+rhythm of a thumping backing track. Their hands fly across the faders on a
+massive mixing desk. It is a chaotic, caffeine-fueled cockpit designed to wake
+up an entire nation.
+### DIRECTOR'S NOTES
+Style:
+*
+The "Vocal Smile": You must hear the grin in the audio. The soft palate is
+always raised to keep the tone bright, sunny, and explicitly inviting.
+*
+Dynamics: High projection without shouting. Punchy consonants and elongated
+vowels on excitement words (e.g., "Beauuutiful morning").
+Pace: Speaks at an energetic pace, keeping up with the fast music.  Speaks
+with A "bouncing" cadence. High-speed delivery with fluid transitions — no dead
+air, no gaps.
+Accent: Jaz is from Brixton, London
+### SAMPLE CONTEXT
+Jaz is the industry standard for Top 40 radio, high-octane event promos, or any
+script that requires a charismatic Estuary accent and 11/10 infectious energy.
+#### TRANSCRIPT
+[excitedly] Yes, massive vibes in the studio! You are locked in and it is
+absolutely popping off in London right now. If you're stuck on the tube, or
+just sat there pretending to work... stop it. Seriously, I see you.
+[shouting] Turn this up! We've got the project roadmap landing in three,
+two... let's go!
+Detailed prompting strategies
+Let&#39;s break down each element of the prompt.
+Audio Profile
+Briefly describe the persona of the character.
+Name.
+ Giving your character a name helps ground the model and tight
+performance together, Refer to the character by name when setting the scene and
+context
+Role.
+ Core identity and archetype of the character that&#39;s playing out
+in the scene. e.g., Radio DJ, Podcaster, News reporter etc.
+Examples:
+# AUDIO PROFILE: Jaz R.
+## "The Morning Hype"
+# AUDIO PROFILE: Monica A.
+## "The Beauty Influencer"
+Scene
+Set the context for the scene, including location, mood, and environmental
+details that establish the tone and vibe. Describe what is happening around the
+character and how it affects them. The scene provides the environmental context
+for the entire interaction and guides the acting performance in a subtle
+organic way.
+Examples:
+## THE SCENE: The London Studio
+It is 10:00 PM in a glass-walled studio overlooking the moonlit London skyline,
+but inside, it is blindingly bright. The red "ON AIR" tally light is blazing.
+Jaz is standing up, not sitting, bouncing on the balls of their heels to the
+rhythm of a thumping backing track. Their hands fly across the faders on a
+massive mixing desk. It is a chaotic, caffeine-fueled cockpit designed to
+wake up an entire nation.
+## THE SCENE: Homegrown Studio
+A meticulously sound-treated bedroom in a suburban home. The space is
+deadened by plush velvet curtains and a heavy rug, but there is a
+distinct "proximity effect."
+Directors notes
+This critical section includes specific performance guidance. You can skip all
+the other elements, but we recommend you include this element.
+Define only what&#39;s important to the performance, being careful to not
+overspecify. Too many strict rules will limit the models&#39; creativity and may
+result in a worse performance. Balance the role and scene description with the
+specific performance rules.
+The most common directions are 
+Style, Pacing and Accent
+, but the model is
+not limited to these, nor requires them. Feel free to include custom
+instructions to cover any additional details important to your performance, and
+go into as much or as little detail as necessary.
+For example:
+### DIRECTOR'S NOTES
+Style: Enthusiastic and Sassy GenZ beauty YouTuber
+Pacing: Speaks at an energetic pace, keeping up with the extremely fast, rapid
+delivery influencers use in short form videos.
+Accent: Southern california valley girl from Laguna Beach |
+Style:
+Sets the tone and Style of the generated speech. Include things like upbeat,
+energetic, relaxed, bored etc. to guide the performance. Be descriptive and
+provide as much detail as necessary:  
+&quot;Infectious enthusiasm. The listener
+should feel like they are part of a massive, exciting community event.&quot;
+ works
+better than simply saying 
+&quot;energetic and enthusiastic&quot;.
+You can even try terms that are popular in the voiceover industry, like &quot;vocal
+smile&quot;. You can layer as many style characteristics as you want.
+Examples:
+Simple Emotion
+DIRECTORS NOTES
+...
+Style: Frustrated and angry developer who can't get the build to run.
+...
+More depth
+DIRECTORS NOTES
+...
+Style: Sassy GenZ beauty YouTuber, who mostly creates content for YouTube Shorts.
+...
+Complex
+DIRECTORS NOTES
+Style:
+*
+The "Vocal Smile": You must hear the grin in the audio. The soft palate is
+always raised to keep the tone bright, sunny, and explicitly inviting.
+*Dynamics: High projection without shouting. Punchy consonants and
+elongated vowels on excitement words (e.g., "Beauuutiful morning").
+Accent:
+Describe the desired accent. The more specific you are, the better the
+results are. For example use &quot;
+British English accent as heard in Croydon,
+England
+&quot; vs &quot;
+British Accent
+&quot;.
+Examples:
+### DIRECTORS NOTES
+...
+Accent: Southern california valley girl from Laguna Beach
+...
+### DIRECTORS NOTES
+...
+Accent: Jaz is a DJ from Brixton, London
+...
+Pacing:
+Overall pacing and pace variation throughout the piece.
+Examples:
+Simple
+### DIRECTORS NOTES
+...
+Pacing: Speak as fast as possible
+...
+More Depth
+### DIRECTORS NOTES
+...
+Pacing: Speaks at a faster, energetic pace, keeping up with fast paced music.
+...
+Complex
+### DIRECTORS NOTES
+...
+Pacing: The "Drift": The tempo is incredibly slow and liquid. Words bleed into each other. There is zero urgency.
+...
+Transcript and audio tags
+The transcript is the exact words the model will speak. An audio tag is a word
+in square brackets that indicates either how something should be said, a change
+of tone, or an interjection.
+### TRANSCRIPT
+I know right, [sarcastically] I couldn't believe it. [whispers] She should have totally left
+at that point.
+[cough] Well, [sighs] I guess it doesn't matter now.
+Give it a try
+Try some of these examples yourself on
+AI Studio
+, play with our
+TTS App
+ and let
+Gemini put you in the directors chair. Keep these tips in mind to make great
+vocal performances:
+Remember to keep the entire prompt coherent – the script and direction go hand in hand in creating a great performance.
+Don&#39;t feel you have to describe everything, sometimes giving the model space to fill in the gaps helps naturalness. (Just like a talented actor)
+If you ever are feeling stuck, have Gemini lend you a hand to help you craft your script or performance.
+Limitations
+TTS models can only receive text inputs and generate audio outputs.
+A TTS session has a 
+context window
+ limit of
+32k tokens.
+Review 
+Languages
+ section for language support.
+TTS does not support streaming.
+The following constraints apply specifically when using the Gemini 3.1 Flash
+TTS Preview model for speech generation:
+Voice inconsistency with prompt instructions:
+ The model&#39;s output may not
+always strictly match the selected speaker, causing the audio to sound
+different than expected. To avoid mismatched tones (such as a deep male
+voice attempting to speak like a young girl), ensure your prompt&#39;s written
+tone and context align naturally with the selected speaker&#39;s profile.
+Quality of longer outputs:
+ Speech quality and consistency may begin to
+drift with generated outputs that are longer than a few minutes. We
+recommend splitting your transcripts into smaller chunks.
+Occasional text token returns:
+ The model occasionally returns text tokens
+instead of audio tokens, causing the server to fail the request with a 
+500
+error. Because this occurs randomly in a very small percentage of requests,
+you should implement automated retry logic in your application to handle
+these.
+Prompt classifier false rejections:
+ Vague prompts may fail to trigger
+the speech synthesis classifier, resulting in a rejected request
+(
+PROHIBITED_CONTENT
+) or causing the model to read your style instructions
+and director&#39;s notes aloud. Validate your prompts by adding a clear preamble
+instructing the model to synthesize speech, and explicitly label where the
+actual spoken transcript begins.
+What's next
+Try the 
+audio generation cookbook
+.
+Gemini&#39;s 
+Live API
+ offers interactive audio
+generation options you can interleave with other modalities.
+For working with audio 
+inputs
+, visit the 
+Audio understanding
+ guide.
+    Send feedback
+Except as otherwise noted, the content of this page is licensed under the 
+Creative Commons Attribution 4.0 License
+, and code samples are licensed under the 
+Apache 2.0 License
+. For details, see the 
+Google Developers Site Policies
+. Java is a registered trademark of Oracle and/or its affiliates.
+Last updated 2026-04-16 UTC.
+    Need to tell us more?
+      [[["Easy to understand","easyToUnderstand","thumb-up"],["Solved my problem","solvedMyProblem","thumb-up"],["Other","otherUp","thumb-up"]],[["Missing the information I need","missingTheInformationINeed","thumb-down"],["Too complicated / too many steps","tooComplicatedTooManySteps","thumb-down"],["Out of date","outOfDate","thumb-down"],["Samples / code issue","samplesCodeIssue","thumb-down"],["Other","otherDown","thumb-down"]],["Last updated 2026-04-16 UTC."],[],[]]
+          Terms
+          Privacy
+          Manage cookies
+English
+Deutsch
+Español – América Latina
+Français
+Indonesia
+Italiano
+Polski
+Português – Brasil
+Shqip
+Tiếng Việt
+Türkçe
+Русский
+עברית
+العربيّة
+فارسی
+हिंदी
+বাংলা
+ภาษาไทย
+中文 – 简体
+中文 – 繁體
+日本語
+한국어
+[]
+{&#34;at&#34;: &#34;True&#34;, &#34;ga4&#34;: [], &#34;ga4p&#34;: [], &#34;gtm&#34;: [{&#34;id&#34;: &#34;GTM-TC2MQKS8&#34;, &#34;purpose&#34;: 0}], &#34;parameters&#34;: {&#34;internalUser&#34;: &#34;False&#34;, &#34;language&#34;: {&#34;machineTranslated&#34;: &#34;False&#34;, &#34;requested&#34;: &#34;en&#34;, &#34;served&#34;: &#34;en&#34;}, &#34;pageType&#34;: &#34;article&#34;, &#34;projectName&#34;: &#34;Gemini API&#34;, &#34;signedIn&#34;: &#34;False&#34;, &#34;tenant&#34;: &#34;googledevai&#34;, &#34;recommendations&#34;: {&#34;sourcePage&#34;: &#34;&#34;, &#34;sourceType&#34;: 0, &#34;sourceRank&#34;: 0, &#34;sourceIdenticalDescriptions&#34;: 0, &#34;sourceTitleWords&#34;: 0, &#34;sourceDescriptionWords&#34;: 0, &#34;experiment&#34;: &#34;&#34;}, &#34;experiment&#34;: {&#34;ids&#34;: &#34;&#34;}}}
+  (function(d,e,v,s,i,t,E){d['GoogleDevelopersObject']=i;
+    t=e.createElement(v);t.async=1;t.src=s;E=e.getElementsByTagName(v)[0];
+    E.parentNode.insertBefore(t,E);})(window, document, 'script',
+    'https://www.gstatic.com/devrel-devsite/prod/v579073a50c63499824df5a68b8922367066583d283ef78fdade1028efdb4ceb5/googledevai/js/app_loader.js', '[59,"en",null,"/js/devsite_app_module.js","https://www.gstatic.com/devrel-devsite/prod/v579073a50c63499824df5a68b8922367066583d283ef78fdade1028efdb4ceb5","https://www.gstatic.com/devrel-devsite/prod/v579073a50c63499824df5a68b8922367066583d283ef78fdade1028efdb4ceb5/googledevai","https://googledevai-dot-devsite-v2-prod-3p.appspot.com",null,null,["/_pwa/googledevai/manifest.json","https://www.gstatic.com/devrel-devsite/prod/v579073a50c63499824df5a68b8922367066583d283ef78fdade1028efdb4ceb5/images/video-placeholder.svg","https://www.gstatic.com/devrel-devsite/prod/v579073a50c63499824df5a68b8922367066583d283ef78fdade1028efdb4ceb5/googledevai/images/favicon-new.png","/_static/googledevai/images/gemini-api-logo.svg","https://fonts.googleapis.com/css?family=Google+Sans:400,500|Roboto:400,400italic,500,500italic,700,700italic|Roboto+Mono:400,500,700|Inter:400,500|Inter+Tight:300,500,600&display=swap"],1,null,[1,6,8,12,14,17,21,25,50,52,63,70,75,76,80,87,91,92,93,97,98,100,101,102,103,104,105,107,108,109,110,112,113,117,118,120,122,124,125,126,127,129,130,131,132,133,134,135,136,138,140,141,147,148,149,151,152,156,157,158,159,161,163,164,168,169,170,179,180,182,183,186,191,193,196],"AIzaSyCNm9YxQumEXwGJgTDjxoxXK6m1F-9720Q","AIzaSyCc76DZePGtoyUjqKrLdsMGk_ry7sljLbY","ai.google.dev","AIzaSyB9bqgQ2t11WJsOX8qNsCQ6U-w91mmqF-I","AIzaSyAdYnStPdzjcJJtQ0mvIaeaMKj7_t6J_Fg",null,null,null,["DevPro__enable_developer_subscriptions","MiscFeatureFlags__enable_project_variables","Cloud__enable_cloudx_experiment_ids","Analytics__enable_clearcut_logging","Profiles__enable_developer_profile_benefits_ui_redesign","DevPro__enable_vertex_credit_card","DevPro__enable_devpro_offers","Cloud__cache_serialized_dynamic_content","DevPro__enable_devsite_captcha","MiscFeatureFlags__gdp_dashboard_reskin_enabled","MiscFeatureFlags__developers_footer_image","Concierge__enable_pushui","Profiles__enable_callout_notifications","Search__enable_page_map","MiscFeatureFlags__enable_variable_operator","Search__enable_dynamic_content_confidential_banner","Concierge__enable_remove_info_panel_tags","Analytics__enable_devpro_interaction_logging","MiscFeatureFlags__enable_explain_this_code","CloudShell__cloud_shell_button","DevPro__enable_cloud_innovators_plus","CloudShell__cloud_code_overflow_menu","DevPro__enable_google_payments","Profiles__enable_profile_collections","MiscFeatureFlags__remove_cross_domain_tracking_params","Cloud__enable_cloud_shell_fte_user_flow","Profiles__enable_complete_playlist_endpoint","Search__enable_ai_eligibility_checks","MiscFeatureFlags__enable_variable_operator_index_yaml","DevPro__enable_nvidia_credits_card","Profiles__enable_awarding_url","Cloud__enable_llm_concierge_chat","SignIn__enable_l1_signup_flow","BookNav__enable_tenant_cache_key","OnSwitch__enable","EngEduTelemetry__enable_engedu_telemetry","DevPro__enable_google_payments_buyflow","Profiles__enable_release_notes_notifications","MiscFeatureFlags__developers_footer_dark_image","MiscFeatureFlags__enable_view_transitions","Profiles__enable_purchase_prompts","MiscFeatureFlags__enable_firebase_utm","Cloud__enable_cloud_shell","Profiles__enable_user_type","DevPro__enable_embed_profile_creation","Profiles__enable_completequiz_endpoint","Search__enable_ai_search_summaries_for_all","DevPro__enable_enterprise","TpcFeatures__enable_unmirrored_page_left_nav","Cloud__fast_free_trial","Profiles__enable_stripe_subscription_management","Concierge__enable_devsite_llm_tools","Profiles__enable_developer_profile_pages_as_content","Profiles__enable_playlist_community_acl","DevPro__enable_credits_banner","DevPro__enable_firebase_workspaces_card","Cloud__enable_cloud_dlp_service","Profiles__enable_developer_profiles_callout","Profiles__enable_auto_apply_credits","Profiles__enable_completecodelab_endpoint","TpcFeatures__proxy_prod_host","DevPro__enable_code_assist","Search__enable_suggestions_from_borg","Concierge__enable_actions_menu","MiscFeatureFlags__enable_framebox_badge_methods","Cloud__enable_free_trial_server_call","Profiles__enable_page_saving","MiscFeatureFlags__enable_explicit_template_dependencies","Profiles__require_profile_eligibility_for_signin","MiscFeatureFlags__enable_llms_txt","Profiles__enable_join_program_group_endpoint","DevPro__enable_google_one_card","DevPro__remove_eu_tax_intake_form","Profiles__enable_targeted_hero","DevPro__enable_free_benefits","Profiles__enable_recognition_badges","Profiles__enable_public_developer_profiles","MiscFeatureFlags__fix_lower_breadcrumbs","Cloud__enable_legacy_calculator_redirect","MiscFeatureFlags__enable_appearance_cookies","Experiments__reqs_query_experiments","DevPro__enable_g1_integration","Profiles__enable_dashboard_curated_recommendations"],null,null,"AIzaSyA58TaKli1DculwmAmbpzLVGuWc8eCQgQc","https://developerscontentserving-pa.googleapis.com","AIzaSyDWBU60w0P9hEkr29kkksYs8Z7gvZ8u_wc","https://developerscontentsearch-pa.googleapis.com",2,4,null,"https://developerprofiles-pa.googleapis.com",[59,"googledevai","Google AI for Developers","ai.google.dev",null,"googledevai-dot-devsite-v2-prod-3p.appspot.com",null,null,[null,1,null,null,null,null,null,null,null,null,null,[1],null,null,null,null,null,null,[1],null,null,null,null,[1],[1,1,null,1,1],null,null,null,null,null,[1]],null,[73,null,null,null,null,null,"/images/lockup-new.svg","/images/touchicon-180-new.png",null,null,null,null,1,1,null,null,null,null,null,null,null,2,null,null,null,"/images/lockup-dark-theme-new.svg",[]],[],null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,[44,2,4,6,7,12,14,15,17,18,20,21,22,23,28,29,32,37,39,40,43],null,[[],[1,1],null,1],[[null,null,null,null,null,["GTM-TC2MQKS8"],null,null,null,null,null,[["GTM-TC2MQKS8",1]],1]],null,4,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,[]],null,null,1,1,"https://developerscontentinsights-pa.googleapis.com","AIzaSyC11xEGtFhkmSh_iF6l_itbxnFz2GrIBOg","AIzaSyAXJ10nRF73mmdSDINgkCNX5bbd2KPcWm8","https://developers.googleapis.com",["https://aistudio.google.com"],null,"AIzaSyCjP0KOnHfv8mwe38sfzZJMOnqE3HvrD4A",null,null,"https://developers.googleapis.com"]')

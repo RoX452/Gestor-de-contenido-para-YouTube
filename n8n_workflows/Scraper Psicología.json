@@ -1,0 +1,805 @@
+{
+  "name": "Scraper Psicología",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## 1. Extraccion de Canales",
+        "height": 304,
+        "width": 1968,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -2368,
+        192
+      ],
+      "id": "44b3aa16-2ec0-4233-9291-e2225b1e8ccb",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## 2. Filtrado de Virales y Duplicados",
+        "height": 480,
+        "width": 1296,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1360,
+        -352
+      ],
+      "id": "8bb6de8d-abd9-48d4-a993-a5c1f8045575",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## 3. Guardado en Base de Datos",
+        "height": 464,
+        "width": 1200,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -16,
+        -160
+      ],
+      "id": "26d8c7c6-69b3-4d1c-93d9-3353dd88f63f",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "8c0a2a1a-a1b1-4f11-92bd-55cfcf5f5c50",
+              "leftValue": "={{ $json['Source Video URL'] }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "empty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        304,
+        96
+      ],
+      "id": "eedf2376-8085-425d-a30a-5ede1fe70d2c",
+      "name": "Filtrar Filas Vacias"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        304,
+        -80
+      ],
+      "id": "f81b7d3c-bbfc-4c30-85a1-4e123ef169d0",
+      "name": "Emparejar URL con Fila Vacia"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -1392,
+        256
+      ],
+      "id": "fa5fcd32-7a38-4a25-b28e-526654592dbf",
+      "name": "Bucle de Canales"
+    },
+    {
+      "parameters": {
+        "jsCode": "const rawUrls = $input.first().json.lista_urls || \"\";\nconst urls = rawUrls.split('\\n').map(u => u.trim()).filter(u => u);\n\nreturn urls.map(url => {\n  let cleanUrl = url.split('?')[0];\n  cleanUrl = cleanUrl.replace(/\\/videos\\/?$/, '').replace(/\\/featured\\/?$/, '').replace(/\\/shorts\\/?$/, '');\n  return { json: { url_original: url, url_limpia: cleanUrl } };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2048,
+        256
+      ],
+      "id": "a8ba8c4e-523a-4408-8029-0a8c48aba1a9",
+      "name": "Limpiar Formato de URLs"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.url_limpia }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "text"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1824,
+        256
+      ],
+      "id": "c4603853-4e0b-4a92-a557-b4ab84bbd3d3",
+      "name": "Extraer HTML del Canal"
+    },
+    {
+      "parameters": {
+        "jsCode": "return $input.all().map(item => {\n  const html = item.json.data;\n  const urlLimpia = item.json.url_limpia;\n  let channelId = null;\n\n  const match = html.match(/channel_id=(UC[\\w-]+)/);\n  if (match && match[1]) {\n    channelId = match[1];\n  } else {\n    const matchMeta = html.match(/\"browseId\":\"(UC[\\w-]+)\"/);\n    if (matchMeta && matchMeta[1]) {\n      channelId = matchMeta[1];\n    }\n  }\n\n  if (!channelId) {\n    channelId = \"ID_NO_ENCONTRADO_REVISAR_URL\";\n  }\n\n  return { json: { \"channel-id\": channelId, canal_base: urlLimpia } };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1616,
+        256
+      ],
+      "id": "7f65a6c2-5fef-42aa-879b-1c30aba566e8",
+      "name": "Obtener ID Real (UC...)"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://localhost:5678/webhook-test/63b2a67c-3a70-4c6a-8152-fd744dd0506b",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        992,
+        -96
+      ],
+      "id": "c3b5f1d8-61a2-4210-ab51-737257f19964",
+      "name": "Notificar a Producción1",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 4
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -2544,
+        256
+      ],
+      "id": "5a6a1973-e796-4956-beee-2a788dc63334",
+      "name": "Disparador Programado (4h)"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "76e3d231-1521-4f24-9f22-385d58b217a9",
+              "name": "=lista_urls",
+              "value": "https://www.youtube.com/@DividendBull\nhttps://www.youtube.com/@DividendData",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -2288,
+        256
+      ],
+      "id": "4534484e-6e18-4cdc-b775-a003200ccaeb",
+      "name": "Lista de Canales a Espiar"
+    },
+    {
+      "parameters": {
+        "jsCode": "if (!items[0] || !items[0].json || !items[0].json.feed || !items[0].json.feed.entry) return [];\n\nconst entries = items[0].json.feed.entry;\nconst extractedVideos = (Array.isArray(entries) ? entries : [entries]).map(entry => {\n  return {\n    url: entry.link?.href || '',\n    title: entry.title || '',\n    views: parseInt(entry['media:group']?.['media:community']?.['media:statistics']?.views || 0, 10),\n    published: entry.published || ''\n  };\n});\n\nextractedVideos.sort((a, b) => new Date(b.published) - new Date(a.published));\nreturn extractedVideos.map(video => ({ json: video }));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -768,
+        272
+      ],
+      "id": "eaeb7488-69c5-4fde-85da-f22866ac1113",
+      "name": "Limpiar Metadatos XML"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -560,
+        272
+      ],
+      "id": "c669284d-7dde-4eb5-8fd6-6301081c96a0",
+      "name": "Pausa Antiban 5s",
+      "webhookId": "79f039a0-cd9d-4391-aa8d-07e8c8c540e0"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        -1280,
+        -80
+      ],
+      "id": "34e452ab-5b78-485e-a010-6ec8c0e0db51",
+      "name": "Agrupar Videos Extraidos"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Run Once for All Items - filters videos and outputs only URLs\nconst NOW = new Date(); \n\nfunction hoursSince(dateIso) {\n  const d = new Date(dateIso);\n  if (isNaN(d.getTime())) return Infinity; \n  return (NOW - d) / 36e5; \n}\n\nfunction passes(video) {\n  const views = Number(video?.views ?? 0);\n  const ageH = hoursSince(video?.published);\n  if (ageH > 48) return false;\n  if (views > 7000) return true;\n  if (views >= 4000 && ageH <= 12) return true;\n  return false;\n}\n\nconst input = items[0].json ?? items[0];\nconst data = Array.isArray(input.data) ? input.data : [];\n\nconst filtered = data.filter(passes);\n\nreturn filtered.map(video => {\n  return {\n    json: {\n      url: video.url\n    }\n  };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -912,
+        -80
+      ],
+      "id": "6db9f115-8edc-4f68-85d8-2bced789ea81",
+      "name": "Regla Filtro Virales"
+    },
+    {
+      "parameters": {
+        "authentication": "nocoDbApiToken",
+        "operation": "getAll",
+        "projectId": "pb668ua65pmyb4y",
+        "table": "mb2yb6xkrjejgvb",
+        "returnAll": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.nocoDb",
+      "typeVersion": 3,
+      "position": [
+        -1120,
+        -256
+      ],
+      "id": "ba8702ad-44ee-43e5-8f6c-4e0d26c0c49f",
+      "name": "Obtener Todo de NocoDB",
+      "credentials": {
+        "nocoDbApiToken": {
+          "id": "rUmU1Zd9NF5Xglqp",
+          "name": "NocoDB Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "['Source Video URL']",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -928,
+        -256
+      ],
+      "id": "c4b48e5e-8392-4598-b8ec-260c31e63ea2",
+      "name": "Extraer URLs Existentes"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "3b49d242-91ea-4b66-8830-2094894f96bd",
+              "leftValue": "={{ $json['[\\'Source Video URL\\']'] }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        -720,
+        -256
+      ],
+      "id": "39b4c1d8-d17f-4bf1-9ec6-160c0e7c00d6",
+      "name": "Remover URLs Vacias"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -576,
+        -96
+      ],
+      "id": "241f565a-bc36-4629-8224-f44c543b6c6b",
+      "name": "Unir URLs Nuevas y Viejas"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        -384,
+        -96
+      ],
+      "id": "7a070514-5275-45d2-8acb-aa0edd1cb90f",
+      "name": "Agrupar para Filtrar"
+    },
+    {
+      "parameters": {
+        "jsCode": "const inputData = items[0].json.data;\nconst existingLinks = new Set();\nconst newUrls = [];\n\nfor (const obj of inputData) {\n  if (obj[\"['Source Video URL']\"]) {\n    existingLinks.add(obj[\"['Source Video URL']\"]);\n  } else if (obj.url) {\n    newUrls.push(obj.url);\n  }\n}\n\nconst filteredUniqueNew = new Set(newUrls.filter(url => !existingLinks.has(url)));\nreturn [...filteredUniqueNew].map(url => ({ json: { url } }));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -208,
+        -96
+      ],
+      "id": "7fc17a9a-e000-49ca-aa9b-97ba75b8a12d",
+      "name": "Descartar Videos Repetidos"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.xml",
+      "typeVersion": 1,
+      "position": [
+        -960,
+        272
+      ],
+      "id": "81daf988-b482-46fb-a2c4-f13c1a2b94e5",
+      "name": "Convertir XML a JSON1",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        512,
+        -80
+      ],
+      "id": "d0b1d03d-4851-4213-a02c-9cfe485a3572",
+      "name": "Bucle Actualizar"
+    },
+    {
+      "parameters": {
+        "authentication": "nocoDbApiToken",
+        "operation": "getAll",
+        "projectId": "pb668ua65pmyb4y",
+        "table": "mb2yb6xkrjejgvb",
+        "returnAll": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.nocoDb",
+      "typeVersion": 3,
+      "position": [
+        80,
+        96
+      ],
+      "id": "3c193d0b-fb08-4c74-8397-0184925485bd",
+      "name": "Obtener Filas",
+      "credentials": {
+        "nocoDbApiToken": {
+          "id": "rUmU1Zd9NF5Xglqp",
+          "name": "NocoDB Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://www.youtube.com/feeds/videos.xml",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "channel_id",
+              "value": "={{ $json['channel-id'] }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "User-Agent",
+              "value": "=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
+            }
+          ]
+        },
+        "options": {
+          "allowUnauthorizedCerts": true
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1168,
+        272
+      ],
+      "id": "1a75f5d8-052c-4035-b8bf-02a6d4e22c8c",
+      "name": "Obtener Datos RSS YT",
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "authentication": "nocoDbApiToken",
+        "operation": "update",
+        "projectId": "pb668ua65pmyb4y",
+        "table": "mb2yb6xkrjejgvb",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldName": "Id",
+              "fieldValue": "={{ $json.Id }}"
+            },
+            {
+              "fieldName": "Source Video URL",
+              "fieldValue": "={{ $json.url }}"
+            },
+            {
+              "fieldName": "Status",
+              "fieldValue": "Pendiente"
+            },
+            {
+              "fieldName": "Origen",
+              "fieldValue": "Bot"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.nocoDb",
+      "typeVersion": 3,
+      "position": [
+        752,
+        -64
+      ],
+      "id": "9b84ec6c-1772-43cf-ad23-4e10508b7180",
+      "name": "Actualizar URLs Virales",
+      "credentials": {
+        "nocoDbApiToken": {
+          "id": "rUmU1Zd9NF5Xglqp",
+          "name": "NocoDB Token account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Filtrar Filas Vacias": {
+      "main": [
+        [
+          {
+            "node": "Emparejar URL con Fila Vacia",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Emparejar URL con Fila Vacia": {
+      "main": [
+        [
+          {
+            "node": "Bucle Actualizar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Bucle de Canales": {
+      "main": [
+        [
+          {
+            "node": "Agrupar Videos Extraidos",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Obtener Datos RSS YT",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limpiar Formato de URLs": {
+      "main": [
+        [
+          {
+            "node": "Extraer HTML del Canal",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extraer HTML del Canal": {
+      "main": [
+        [
+          {
+            "node": "Obtener ID Real (UC...)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Obtener ID Real (UC...)": {
+      "main": [
+        [
+          {
+            "node": "Bucle de Canales",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Disparador Programado (4h)": {
+      "main": [
+        [
+          {
+            "node": "Lista de Canales a Espiar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Lista de Canales a Espiar": {
+      "main": [
+        [
+          {
+            "node": "Limpiar Formato de URLs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limpiar Metadatos XML": {
+      "main": [
+        [
+          {
+            "node": "Pausa Antiban 5s",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pausa Antiban 5s": {
+      "main": [
+        [
+          {
+            "node": "Bucle de Canales",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agrupar Videos Extraidos": {
+      "main": [
+        [
+          {
+            "node": "Regla Filtro Virales",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Obtener Todo de NocoDB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Regla Filtro Virales": {
+      "main": [
+        [
+          {
+            "node": "Unir URLs Nuevas y Viejas",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Obtener Todo de NocoDB": {
+      "main": [
+        [
+          {
+            "node": "Extraer URLs Existentes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extraer URLs Existentes": {
+      "main": [
+        [
+          {
+            "node": "Remover URLs Vacias",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Remover URLs Vacias": {
+      "main": [
+        [
+          {
+            "node": "Unir URLs Nuevas y Viejas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Unir URLs Nuevas y Viejas": {
+      "main": [
+        [
+          {
+            "node": "Agrupar para Filtrar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agrupar para Filtrar": {
+      "main": [
+        [
+          {
+            "node": "Descartar Videos Repetidos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Descartar Videos Repetidos": {
+      "main": [
+        [
+          {
+            "node": "Obtener Filas",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Emparejar URL con Fila Vacia",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convertir XML a JSON1": {
+      "main": [
+        [
+          {
+            "node": "Limpiar Metadatos XML",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Bucle Actualizar": {
+      "main": [
+        [
+          {
+            "node": "Notificar a Producción1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Actualizar URLs Virales",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Obtener Filas": {
+      "main": [
+        [
+          {
+            "node": "Filtrar Filas Vacias",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Obtener Datos RSS YT": {
+      "main": [
+        [
+          {
+            "node": "Convertir XML a JSON1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Actualizar URLs Virales": {
+      "main": [
+        [
+          {
+            "node": "Bucle Actualizar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "73e48d35-4ca4-4672-aba0-a465bdf77e5e",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "d383f2fa52875a58e976488c620efb0ceae0645bf6518ffe737901c3054d2c20"
+  },
+  "id": "jsIaXdqjBQw6ktqv",
+  "tags": []
+}

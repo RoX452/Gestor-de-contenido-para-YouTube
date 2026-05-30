@@ -1,0 +1,62 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 0. Global Safety Net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // 1. Primitive Helpers
+    function isSignedIn() { return request.auth != null; }
+    function isOwner(userId) { return isSignedIn() && request.auth.uid == userId; }
+    function isAdmin() { return isSignedIn() && request.auth.token.email == 'wolfierogger@gmail.com'; }
+    function isValidId(id) { return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$'); }
+    function incoming() { return request.resource.data; }
+    function existing() { return resource.data; }
+
+    // 2. Validation Blueprints
+    function isValidUser(data) {
+      return data.keys().hasAll(['uid', 'email']) &&
+             data.uid is string && data.uid.size() <= 128 &&
+             data.email is string && data.email.size() <= 256;
+    }
+
+    function isValidProject(data) {
+      return data.keys().hasAll(['id', 'userId', 'workspaceId', 'date', 'title']) &&
+             data.id is string && data.id.size() <= 128 &&
+             data.userId is string && data.userId.size() <= 128 &&
+             data.workspaceId is string && data.workspaceId.size() <= 64 &&
+             data.date is number &&
+             data.title is string && data.title.size() <= 500;
+    }
+
+    function isValidNiche(data) {
+      return data.keys().hasAll(['id', 'userId', 'name', 'prompt']) &&
+             data.id is string && data.id.size() <= 128 &&
+             data.userId is string && data.userId.size() <= 128 &&
+             data.name is string && data.name.size() <= 128 &&
+             data.prompt is string && data.prompt.size() <= 5000;
+    }
+
+    // 3. Match Blocks
+    match /users/{userId} {
+      allow read, write: if isOwner(userId) || isAdmin();
+
+      match /projects/{projectId} {
+        allow read, write: if isOwner(userId) || isAdmin();
+      }
+
+      match /niches/{nicheId} {
+        allow read, write: if isOwner(userId) || isAdmin();
+      }
+    }
+
+    match /historyItems/{projectId} {
+      allow read, write: if isSignedIn();
+      
+      match /segments/{segmentId} {
+        allow read, write: if isSignedIn();
+      }
+    }
+  }
+}

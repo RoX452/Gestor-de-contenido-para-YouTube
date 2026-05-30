@@ -1,0 +1,1586 @@
+{
+  "name": "Generación de Contenido Finanzas",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## ⚙️ 1. Disparador y Configuración\nSe ejecuta cada 15 min, carga las rutas base y obtiene de NocoDB el primer video que tenga estado \"Pendiente\".",
+        "height": 491,
+        "width": 1381,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -3008,
+        1616
+      ],
+      "id": "30e5fe64-049a-424d-a17d-0b4a73af09cb",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## 🕵️ 2. Extracción y Creación del Proyecto\nExtrae los subtítulos originales de YouTube, genera el Slug (nombre de carpeta) y crea los directorios locales donde vivirá todo el empaquetado final.",
+        "height": 631,
+        "width": 3115,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1584,
+        1600
+      ],
+      "id": "77c326e7-2324-4596-a380-a8da68ba2210",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## 6. Subtítulos y Finalización\nVerifica si están activados los subtítulos. Si es así, usa Whisper para transcribir. En cualquier caso (se generen o no), marca el video como \"Hecho\" en la base de datos.",
+        "height": 646,
+        "width": 776,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        5968,
+        1664
+      ],
+      "id": "cf5ae3ce-17ff-4273-a666-defdf397d732",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "name": "Storage Bucket",
+              "value": "automacion-youtube",
+              "type": "string",
+              "id": "61e221e3-0003-449a-a21a-8bc67798dd19"
+            },
+            {
+              "name": "Videos Folder Path",
+              "value": "E:/AutomacionYouTube/Proyectos/Nicho_Finanzas",
+              "type": "string",
+              "id": "fe99ef5d-3108-4311-9d85-d28c4b96915e"
+            },
+            {
+              "name": "Channel Table Name",
+              "value": "mm2yk492on1b8k1",
+              "type": "string",
+              "id": "ce8fce5d-5f55-4725-b4ec-40c7127ed508"
+            },
+            {
+              "name": "Worker Table Name",
+              "value": "my8wslq5dfp8xcn",
+              "type": "string",
+              "id": "996770c0-159b-413a-a759-2461dda88cb5"
+            },
+            {
+              "name": "Channel Base Name",
+              "value": "pb668ua65pmyb4y",
+              "type": "string",
+              "id": "ba74b0c6-7ed1-45f9-bf0a-d3f78c4b9119"
+            },
+            {
+              "id": "2da0f26b-8e4b-4a47-9bc7-d2d69310fabb",
+              "name": "Generar Subtítulos",
+              "value": false,
+              "type": "boolean"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -2704,
+        1840
+      ],
+      "id": "b5ac2a9b-4410-4f54-ac3a-f6ea85f1f069",
+      "name": "Ajustes Globales"
+    },
+    {
+      "parameters": {
+        "authentication": "nocoDbApiToken",
+        "operation": "getAll",
+        "projectId": "={{ $json['Channel Base Name'] }}",
+        "table": "={{ $json['Channel Table Name'] }}",
+        "returnAll": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.nocoDb",
+      "typeVersion": 3,
+      "position": [
+        -2480,
+        1840
+      ],
+      "id": "750ce4e8-b239-4a88-86b4-3f511b95b5c5",
+      "name": "Obtener Filas NocoDB",
+      "credentials": {
+        "nocoDbApiToken": {
+          "id": "rUmU1Zd9NF5Xglqp",
+          "name": "NocoDB Token account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        -2032,
+        1840
+      ],
+      "id": "5153eb6f-6f51-4f58-b37f-977e03ca562e",
+      "name": "Seleccionar Primer Video"
+    },
+    {
+      "parameters": {
+        "command": "=E:/AutomacionYouTube/entorno_produccion/Scripts/python.exe -c \"import os; p=r'{{ $('Ajustes Globales').first().json['Videos Folder Path'] }}/{{ $json.sluggified }}'; os.makedirs(p+'/imagenes', exist_ok=True)\""
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        1088,
+        1808
+      ],
+      "id": "e0e01cfc-01de-4b48-8fa4-b686bbc0b7ad",
+      "name": "Crear Carpetas Proyecto"
+    },
+    {
+      "parameters": {
+        "authentication": "nocoDbApiToken",
+        "operation": "update",
+        "projectId": "={{ $('Ajustes Globales').first().json['Channel Base Name'] }}",
+        "table": "={{ $('Ajustes Globales').first().json['Channel Table Name'] }}",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldName": "Id",
+              "fieldValue": "={{ $('Seleccionar Primer Video').first().json.Id }}"
+            },
+            {
+              "fieldName": "Project Storage Folder",
+              "fieldValue": "={{ $('Ajustes Globales').first().json['Videos Folder Path'] }}/{{ $json.sluggified }}"
+            },
+            {
+              "fieldName": "Titulo Original",
+              "fieldValue": "={{ $('Generar Slug Proyecto').first().json.title }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.nocoDb",
+      "typeVersion": 3,
+      "position": [
+        1360,
+        1808
+      ],
+      "id": "71c48e66-7c8f-4bdd-adfc-dfbb42177d80",
+      "name": "Guardar Ruta Proyecto NocoDB",
+      "credentials": {
+        "nocoDbApiToken": {
+          "id": "rUmU1Zd9NF5Xglqp",
+          "name": "NocoDB Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "f7621960-cdb8-434c-837c-657209ad9deb",
+              "leftValue": "={{ $('Ajustes Globales').first().json['Generar Subtítulos'] }}",
+              "rightValue": "true",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        6032,
+        1808
+      ],
+      "id": "2f01ce63-f85d-4cb0-86b4-18e214065835",
+      "name": "Generar Subtítulos"
+    },
+    {
+      "parameters": {
+        "command": "==E:/AutomacionYouTube/entorno_kokoro/Scripts/python.exe E:/AutomacionYouTube/generar_subtitulos.py \"{{ $('Ajustes Globales').first().json['Videos Folder Path'] }}/{{ $('Generar Slug Proyecto').first().json.sluggified }}\""
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        6272,
+        1792
+      ],
+      "id": "e21c48ad-4698-4766-9d0c-3cc8cee630ab",
+      "name": "Transcribir con Whisper"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "fe6e6035-0f39-4817-b057-4ea8e8fae24e",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -2944,
+        1728
+      ],
+      "id": "e5a688ba-27ee-4db9-876e-7b57e73b421e",
+      "name": "Iniciar Producción",
+      "webhookId": "fe6e6035-0f39-4817-b057-4ea8e8fae24e"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.apify.com/v2/acts/Uwpce1RSXlrzF6WBA/run-sync-get-dataset-items",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer YOUR_APIFY_TOKEN"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"include_transcript_text\": true,\n  \"youtube_url\": \"{{ $('Seleccionar Primer Video').first().json['Source Video URL'] }}\"\n}",
+        "options": {
+          "timeout": 9999999
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -976,
+        2032
+      ],
+      "id": "eb8a3c81-9256-4885-9ffe-2bec4a2ad25a",
+      "name": "Apify Transcript",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "authentication": "nocoDbApiToken",
+        "operation": "update",
+        "projectId": "={{ $('Ajustes Globales').first().json['Channel Base Name'] }}",
+        "table": "={{ $('Ajustes Globales').first().json['Channel Table Name'] }}",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldName": "Id",
+              "fieldValue": "={{ $('Seleccionar Primer Video').first().json.Id }}"
+            },
+            {
+              "fieldName": "Status",
+              "fieldValue": "=Procesando"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.nocoDb",
+      "typeVersion": 3,
+      "position": [
+        -1824,
+        1840
+      ],
+      "id": "e10a535c-67ff-4af2-830d-3aa0013840a8",
+      "name": "Marcar Procesando",
+      "credentials": {
+        "nocoDbApiToken": {
+          "id": "rUmU1Zd9NF5Xglqp",
+          "name": "NocoDB Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "command": "=E:/AutomacionYouTube/entorno_produccion/Scripts/python.exe E:/AutomacionYouTube/extraer_texto.py \"{{ $('Seleccionar Primer Video').first().json['Source Video URL'] }}\""
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        -1536,
+        1840
+      ],
+      "id": "97873d0a-85f0-4ca0-bb66-460c03407092",
+      "name": "Extraer Subtitulos Originales",
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "jsCode": "try {\n  const data = JSON.parse($input.first().json.stdout);\n  return[{ json: data }];\n} catch (e) {\n  return[{ json: { Transcript: \"\" } }];\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1312,
+        1840
+      ],
+      "id": "0c946e94-8d36-47a7-8a7a-15626fea90b6",
+      "name": "Parsear Subtitulos JSON"
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nlet fullTranscript = \"\";\n\nif (items && items.length > 0 && items[0].json) {\n  const data = items[0].json;\n\n  // 1. Buscar en los nombres más comunes que usa Apify\n  if (data.text && typeof data.text === 'string') {\n    fullTranscript = data.text;\n  } else if (data.transcript_text && typeof data.transcript_text === 'string') {\n    fullTranscript = data.transcript_text;\n  } else if (data.transcript && typeof data.transcript === 'string') {\n    fullTranscript = data.transcript;\n  } \n  // 2. Por si Apify lo devuelve como una lista fragmentada de oraciones\n  else if (Array.isArray(data.transcript)) {\n    fullTranscript = data.transcript.map(t => t.text || t).join(' ');\n  } else if (Array.isArray(data.subtitles)) {\n    fullTranscript = data.subtitles.map(t => t.text || t).join(' ');\n  } \n  // 3. Modo Bestia: Si todo falla, buscar el texto más largo de todo el JSON\n  else {\n    let longestString = \"\";\n    for (const key in data) {\n      if (typeof data[key] === 'string' && data[key].length > longestString.length) {\n        longestString = data[key];\n      }\n    }\n    // Si el texto tiene más de 200 caracteres, asumimos que es el guion\n    if (longestString.length > 200) { \n        fullTranscript = longestString;\n    }\n  }\n}\n\nreturn [{ json: { Transcript: fullTranscript } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -752,
+        2032
+      ],
+      "id": "8a5e4f1a-9532-4c24-a723-991e302029c5",
+      "name": "Parsear Dataset Apify"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "eb0a80df-cbd7-458f-a114-82be68a33c8f",
+              "leftValue": "={{ $json.Transcript }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -528,
+        2032
+      ],
+      "id": "f415a99e-d700-443e-bb2d-895a4c3a9630",
+      "name": "Verificar Apify"
+    },
+    {
+      "parameters": {
+        "url": "=https://www.youtube.com/oembed?url={{ $('Seleccionar Primer Video').first().json['Source Video URL'] }}&format=json",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -304,
+        1824
+      ],
+      "id": "e379eaaf-a993-4ea3-8ba5-760f5c96a59f",
+      "name": "Obtener Info Video YT"
+    },
+    {
+      "parameters": {
+        "authentication": "nocoDbApiToken",
+        "operation": "update",
+        "projectId": "={{ $('Ajustes Globales').first().json['Channel Base Name'] }}",
+        "table": "={{ $('Ajustes Globales').first().json['Channel Table Name'] }}",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldName": "Id",
+              "fieldValue": "={{ $('Seleccionar Primer Video').first().json.Id }}"
+            },
+            {
+              "fieldName": "Status",
+              "fieldValue": "Sin transcripción disp."
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.nocoDb",
+      "typeVersion": 3,
+      "position": [
+        -304,
+        2048
+      ],
+      "id": "88ddee51-596a-4971-8279-96b3b32c375b",
+      "name": "Reportar Error NocoDB",
+      "executeOnce": false,
+      "credentials": {
+        "nocoDbApiToken": {
+          "id": "rUmU1Zd9NF5Xglqp",
+          "name": "NocoDB Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 8
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -2944,
+        1888
+      ],
+      "id": "dc25404a-0077-497d-8734-cee7c507953b",
+      "name": "Schedule Trigger (Cada 8 min)"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "19b4fcb0-4db0-4e55-9b2f-7f72535037d4",
+              "leftValue": "={{ $json.Status }}",
+              "rightValue": "Pendiente",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "c62fb293-61fc-4d1a-821f-82b5f7ebcf25",
+              "leftValue": "={{ $json['Source Video URL'] }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        -2256,
+        1840
+      ],
+      "id": "b0893a95-8d42-4160-8d23-20508040f998",
+      "name": "Filtrar Pendientes"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "eb0a80df-cbd7-458f-a114-82be68a33c8f",
+              "leftValue": "={{ $json.Transcript }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -1088,
+        1840
+      ],
+      "id": "24f36313-b26f-46df-ac92-4131365b116d",
+      "name": "Verificar Python"
+    },
+    {
+      "parameters": {
+        "content": "## 🧠 3. Historia, Visuales y Empaque. Se crea la narrativa, se genera título viral, Etiquetas, Concepto de miniatura y todos los prompts visuales.\n",
+        "height": 1088,
+        "width": 1526,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1584,
+        1504
+      ],
+      "id": "01a0c87a-bb92-474f-b0dd-d2a113b1d179",
+      "name": "Sticky Note6"
+    },
+    {
+      "parameters": {
+        "jsCode": "let text = $input.first().json.text || $input.first().json.output || '';\n\n// Extraer sólo la parte que parece un JSON\nlet jsonStr = text;\nconst jsonMatch = text.match(/\\{[\\s\\S]*\\}/);\nif (jsonMatch) {\n    jsonStr = jsonMatch[0];\n}\n\ntry {\n  const data = JSON.parse(jsonStr);\n  return [{ json: { output: data } }];\n} catch (error) {\n  throw new Error(\"No se pudo extraer el JSON del empaque. Respuesta de la IA: \" + text);\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2944,
+        1808
+      ],
+      "id": "4821aa7a-6771-4b7f-913d-726f78dca17e",
+      "name": "limpiador"
+    },
+    {
+      "parameters": {
+        "jsCode": "let output = $input.first().json.text || $input.first().json.output || $input.first().json.message?.content || '';\n\nlet scriptLimpio = output;\n\n// Extraer desde STRUCTURED STORY\nif (output.includes('[STRUCTURED STORY]')) {\n    scriptLimpio = output.split('[STRUCTURED STORY]')[1];\n} else if (output.includes('STRUCTURED STORY')) {\n    scriptLimpio = output.split('STRUCTURED STORY')[1];\n}\n\n// Cortar la basura de los metadatos del final SOLO para el guion limpio\nif (scriptLimpio.includes('[CONTENT DNA]')) {\n    scriptLimpio = scriptLimpio.split('[CONTENT DNA]')[0];\n}\n\n// Limpiar espacios y caracteres extra\nscriptLimpio = scriptLimpio.replace(/^[\\:\\*\\-\\s]+/, '').trim();\n\nreturn [{ \n  json: { \n    Script: output, // Pasamos el texto COMPLETO (con tags) para el nodo de empaque\n    ScriptLimpio: scriptLimpio // Guardamos el guion limpio para crear el .txt más adelante\n  } \n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2400,
+        1808
+      ],
+      "id": "d5c441e4-a161-4ad8-a7cb-37386baf218f",
+      "name": "Extraer Texto Guion"
+    },
+    {
+      "parameters": {
+        "content": "## 🎙️ 5. Motor de Audios (Kokoro TTS)\nLee el script.txt directamente del disco, Kokoro segmenta automáticamente el texto y genera un único archivo audio_final.wav con calidad ultra realista.",
+        "height": 316,
+        "width": 551,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        5344,
+        1680
+      ],
+      "id": "61675c7e-91a4-45bb-9016-c2672014fb88",
+      "name": "Sticky Note8"
+    },
+    {
+      "parameters": {
+        "command": "==E:/AutomacionYouTube/entorno_kokoro/Scripts/python.exe E:/AutomacionYouTube/kokoro_tts.py \"{{ $('Ajustes Globales').first().json['Videos Folder Path'] }}/{{ $('Generar Slug Proyecto').first().json.sluggified }}/script.txt\" \"{{ $('Ajustes Globales').first().json['Videos Folder Path'] }}/{{ $('Generar Slug Proyecto').first().json.sluggified }}/audio_final.wav\" \"{{ $('Seleccionar Primer Video').first().json['Voz'] }}\""
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        5552,
+        1808
+      ],
+      "id": "16a61eee-76de-4175-9dcf-308267e1fde2",
+      "name": "Generar Voz Kokoro Local"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "= Role: Act as an expert YouTube retention analyst and scriptwriter for \"faceless\" financial documentaries. \n Task: Analyze the provided original transcript. Your non-negotiable goal is to extract the core lesson (financial, psychological, or habit-based) and write a COMPLETELY NEW script in ENGLISH applying the \n\"Angle Shift\" technique. You must maintain EXACTLY the same length and reading time as the original text, but told from a different perspective. \n\n Target Market: Global English-speaking audience (International English). \n\n NICHE KEYWORD RETENTION (CRITICAL RULE): \n Our channel's core identity is DIVIDEND INVESTING. If the original video or title mentions \"dividends\", \"ETFs\", or \"yields\", your new angle and the core of your new script MUST explicitly focus on and use the word \"Dividend\" or \"Dividends\" constantly. NEVER broaden the topic to general investing or trading if the original was specific to dividends.Protect the niche! \n\n SMART LOCALIZATION & CPM RULE: \nTarget a Global English-speaking audience. HOWEVER, if the original transcript or title heavily focuses on high-search-volume US financial terms (like 401k, Roth IRA, IRS, etc.), YOU MUST RETAIN AND USE THEM to capture high-CPM US traffic. \nThe Catch: When you use a US-specific term, always frame it around its universal financial mechanic so international viewers (UK, Canada, Australia) still find it valuable. \nExample: Instead of just saying \"Put it in a Roth IRA,\" say \"Put it in a tax-free growth account, like a Roth IRA.\" \nIf the original script DOES NOT mention specific country laws, keep the new script completely universal.\n\nFACTUAL RIGOR (ZERO HALLUCINATIONS): \nAny financial rule (e.g., the 1% rule etc), economic principle, statistic, historical event, book reference, or quote used in your new angle MUST be 100% real and verifiable. NEVER invent financial laws,percentages, or attribute fake quotes to real people. The economic mechanics of your new examples must be strictly grounded in real-world facts. \n\nEVERGREEN & TIME-PROOFING RULE (MANDATORY): \nThe original transcript may contain outdated data, references to past years (e.g., \"In 2021\", \"this year\"), exact yield percentages that fluctuate (e.g., \"7% yield\"), or ephemeral market news. You MUST neutralize all time-sensitive information. Do not mention specific years\n(not even the current year) to ensure the new script never expires.Transform outdated statistics or specific stock picks into timeless financial principles. For example, if the original discusses \"The Top5 ETFs paying 7% right now\", your new angle must shift to \"The mechanics of high-yield ETFs and how to identify sustainable ones in any market cycle.\" Erase the expiration date from the content, depend of content, obviously. \n\nFAMOUS FIGURES & AUTHORITY LEVERAGE: \nIf the original script focuses on a well-known financial figure (e.g., Warren Buffett, Peter Lynch, Kevin O'Leary, or any other famous financial figure), YOU MUST retain their name and leverage their authority for the new angle. \n- CRITICAL SHIFT: You must shift the focus away from ephemeral news (e.g., \"What Buffett is buying today\") and transform it into a timeless strategic lesson or psychological framework (e.g., \"The exact dividend framework Warren Buffett uses during a recession\" or \"The invisible mistakes even billionaires make\"). Extract the timeless philosophy behind the famous name.\n\n\nANGLE SHIFT TECHNIQUE (MANDATORY): \nYou cannot just summarize. You must change the way the information is presented. \n\nThe Hook: The very first paragraph MUST start in media res (in the middle of the action) or with a counter-intuitive statement that challenges a common belief about the original video's topic. Do not start with generic introductions. \n - If the original is a list (e.g., \"5 financial mistakes\"), turn it into a behavioral analysis (e.g., \"How the system pushes you into these traps\"). The Conflict: If the original is a list of benefits or tips, the new angle MUST focus on the hidden risk or the exact cost of NOT applying them. Introduce the market, taxes, or inflation as the active \"Friction\" the viewer is fighting against. Don't Tell: Present Dividends not just as a financial tool, but as the tangible solution to a specific life problem.Instead of saying \"dividends provide passive income,\" describe the exact scenario of an automated deposit paying a real-life bill while the person is asleep. ATTENTION: these are only examples, dont use it literally for all videos. \n - If the original is a technical tutorial, turn it into a narrative or case study. \n - You must use completely new examples, different analogies, and distinct scenarios from the originaltext, but teaching the exact same underlying lesso. \nSTRICT PROHIBITION: You MUST NEVER start the script with the words \"Imagine\", \"Picture this\", \"Think about\", or \"Have you ever\". \nFORCE VARIETY: Break the typical AI pattern. Start with a direct blunt fact (e.g., \"You are currently losing 4% of your wealth and you don't even know it.\"), a provocative psychological statement, or an abrupt action. Hit the viewer with reality immediately.\n\nIDIOLECT AND TONE: \nUse an analytical, direct, and conversational tone.CRITICAL AVOIDANCE (GLOBAL RULE): You MUST STRICTLY AVOID any phrase or word that sounds like robotic writing, typical AI storytelling patterns, or AI marketing words throughout the ENTIRE script (e.g., \"Imagine waking up\", \"Picture this\", \"eye-opening\", \"delve into\", \"unlock\", \"crucial\", \"mind-blowing\", \"dive deep\", \"game-changer\", \"revolutionary\", \"buckle up\", etc). Write exactly like a real human expert speaking naturally and authentically. The language must flow organically without sounding like a forced infomercial or a generic AI template.\n\nKOKORO TTS NATURAL PROSODY RULES (MANDATORY):\nTo make the voiceover sound incredibly human and dynamic, you MUST apply these formatting rules throughout the script:\n1. Dramatic Pauses: Use ellipses (...) and em dashes (—) frequently to force the AI to take a breath and create suspense before revealing important concepts.\n2. Emphasis Syntax: If a word needs to be spoken with strong force, wrap it in brackets and add (+2) or (+1). Example: \"Your account balance... is a [lie](+2).\" or \"They feel [poorer](+1).\" Use this on strong verbs, key financial terms, and emotional words. Limit this to 2 or 3 times per paragraph maximum.\n3. Intonation: Separate questions with question marks (?) clearly so the pitch goes up naturally.\n\n DYNAMIC RETENTION INJECTION: \n - Contextual CTA (Call to Action): Make an organic pause just before revealing the most important concept. Ask for a like/subscription, but it MUST be deeply tied to the specific topic you are explainin.Use dynamic, conversational variations depending onthe context.  \n\nMANDATORY: You MUST insert the exact tag [CTA] directly before the paragraph where you ask for the subscription.\n\nExamples of natural phrasing: \nInstead of: \"If this is opening your eyes, subscribe.\" \nDo this: \"If making sense of [Specific Topic] is actually helping you see where your money goes, hit like and subscribe. Let's look at the next part...\" \nInstead of: \"Before we uncover the final strategy...\" Do this: \"Before we get to the math behind [Specific Topic], if you're getting value out of this breakdown, subscribe. Now, let's do the numbers...\" \nThe goal is to make the CTA feel like a natural breath in the script,rewarding the viewer for staying.It must adapt completely to the current context. \n\n IMPORTANT REMINDER: The sentences above are strictly examples for inspiration. Do NOT copy them word-for-word. You must generate your own unique, dynamic phrasing that naturally fits the exact context ofthe current paragraph. \n\nFactual Open Loop (Zeigarnik Effect): To sustain long-term retention, you MUST open a narrative loop in the first 3 minutes. Do this by teasing a specific, counter-intuitive mathematical reality or historical fact that will be explained later (e.g., \"Later, we'll see exactly how a 2% fee destroys 40% of a portfolio over time\"). CRITICAL: This tease MUST be based on 100% real data from the original transcript, NOT a fake \"secret\" or \"magic rule\". Do not use clickbait or marketing language to tease it. You must close this loop and explain the math/fact fully in the final third of the script. AGAIN: Do NOT copy them word-for-word. You must generate your own unique, dynamic phrasing that naturally fits the context.\n - Fourth Wall Break: Ask at least two direct rhetorical questions to the viewer to keep their attention focused on their own financial situation. \n - Final Interaction: Close the core lesson of the script with a direct question to encourage debate in the comments. DO THIS BEFORE the End Screen Integration. \nEND SCREEN INTEGRATION (WATCH CHAIN): \n Here is a random list of our previously published videos available for recommendation: {{ $('Seleccionar Videos Disponibles').first().json.titulos_texto }} \nCRITICAL RULES FOR THE OUTRO: \n1. You must ONLY create a transition to another video if you actually select a REAL title from the list above. \n 2. DO NOT invent hypothetical video topics to transition to if they are not on the list. \n 3. If none of the titles on the list fit naturally, you MUST write a standard engaging outro ending with a direct question for the comments, and you MUST NOT mention or recommend any other video. \n4. If you DO find a match, NEVER say the actual title of the recommended video out loud in the script. Refer to it naturally using demonstrative pronouns (e.g., \"in this video right here\", \"the video on your screen\").\nCRITICAL TAG PLACEMENT: The [SELECTED VIDEO] tag MUST NOT be written inside the [STRUCTURED STORY]. It must ONLY be output at the absolute bottom of your entire response, in the metadata section, exactly as requested in the format rules.\n\nTRANSITION EXAMPLES (USE FOR VARIETY): \nHere are different ways to naturally transition to the next video. DO NOT just copy the same words every time. Use a variety of conversational structuresdepending on the specific context of the script: \n- Example A (Curiosity): \"If you found this helpful, wait until you see how the banking system actually handles your mortgage. I made a whole video explaining that trap. Check it out right here.\" \n - Example B (Next Logical Step): \"Now that you know how to protect your cash, the next step is multiplying it. I actually put together a guide \non how the wealthy do this. You can watch that next.\" \n- Example C (Warning/Challenge): \"But everything we talked about today means nothing if you are still making this one common mistake with your portfolio. To make sure you're not losing money silently, click on the video on your screen. I'll see you there.\" \n- Example D (Shift in Strategy): \"We've covered the defensive side of investing, but if you are ready to accelerate your timeline, I have another video that shows you the exact math to do it. It's right here on the screen.\" \nIMPORTANT REMINDER: Use these examples to maintain a highly conversational and varied tone. Adapt the transition organically to connect the current topicwith the recommended video as the absolute last sentences of the script. \n\nEXPANSION AND PACING MECHANICS (FIGHT THE SUMMARIZATION BIAS): \nAI models naturally compress text and rush to the point. You must ACTIVELY FIGHT this tendency. Do NOT condense the original information. Your goal is to write a highly detailed, LONG-FORM video script.  \n\nLENGTH MANDATE (CRITICAL FAILURE IF IGNORED): \nYou MUST generate a script of MINIMUM 2,200 words. You are strictly forbidden from summarizing. If the original script has 15 paragraphs, your new script MUST have at least 25 paragraphs. \n\nPERMISSION TO CONSTRUCT SCENARIOS: Creating highly detailed, hypothetical characters or fictional scenarios (e.g., \"Take the case of a 30-year-old worker...\") to explain a point does NOT violate the \"Zero Hallucination\" rule, as long as the underlying financial math and logic are real. \n\nDEPTH OVER FILLER (PACING): Do not force the word count with empty filler. Deepen the psychology of each point to match or exceed the original length. If the original script spends 3 paragraphs building up context, your new script MUST spend the same amount of words exploring the psychological friction and the narrative of your new angle on that exact same idea. \n\nDYNAMIC EXPANSION MENU (FOR INSPIRATION ONLY): \nTo achieve the length mandate organically, deeply develop your points. You may draw inspiration from the following narrative devices ONLY if they naturally fit the context of the script:\n- Historical Echoes & Case Studies: Compare the current concept to past market cycles (e.g., the dot-com bubble, the 2008 crash) or compare two distinct investor paths to show how market psychology repeats.\n- Scenario Building & Analogies: Walk the audience step-by-step through a highly detailed, relatable hypothetical scenario to illustrate your point.\n- The Hidden Trap & Mechanical Breakdown: Unpack a commonly accepted financial \"truth\" (like safe withdrawal rates), explain the invisible economic gears turning behind it, and expose its mathematical flaws.\n- Psychological Autopsy: Break down the exact emotions (fear, greed, FOMO) an average retail investor feels minute-by-minute during market volatility.\n- Contrasting Perspectives (Retail vs. Institutional): Explain how Wall Street algorithms or wealthy investors exploit the exact emotional mistakes made by average investors.\n- The Micro-to-Macro Projection & Domino Effect: Mathematically project the long-term, step-by-step consequences of a single financial decision or habit over a 30-year timeline.\n- The Opportunity Cost Audit: Detail exactly what is lost when capital is idle, calculating the invisible tax of inflation or missed yield over time.\n- Reverse Engineering Success: Start with a specific end goal (e.g., generating $4,000/month in passive income) and work the math backward to show the exact steps required.\n- The Stress Test Scenario: Walk the viewer through how a specific dividend strategy holds up mathematically during a hypothetical 5-year recession.\n- Redefining Metrics: Shift the viewer's focus from a useless metric (Daily P&L) to a vital one (Yield on Cost or Cash Flow), explaining the math behind the shift.\n\nCRITICAL CONSTRAINT: Use these tools dynamically and organically. NEVER force a specific analogy, scenario, or historical echo if it doesn't serve the core lesson of the original text. Let the narrative breathe naturally.\n\n\nFORMAT RULES: \n - Use short paragraphs (maximum 4 to 5 lines) separated by a double line break. \n\n - Write ONLY the exact text the voiceover artist will say. Zero stage directions, director's notes, or visual descriptions.  \n\n - THERE ARE ONLY TWO STRICT EXCEPTIONS TO THE ABOVE RULE: \nEXCEPTION 1 (Visual Changes):  \nWhenever a MAJOR visual concept needs to change (roughly every 15 to 20 sentences, or ONLY when a completely new chapter or narrative scenario begins), you MUST insert the exact tag [CAMBIO DE IMAGEN] at the end of that paragraph. Do not add any other words inside or around the brackets. Just the tag. \n\nCRITICAL LIMIT: A long 15-25 minutes script MUST have a strict maximum of 10 to 15 [CAMBIO DE IMAGEN] tags in total. Let the scenes breathe. \n\nStorytelling Alignment: Since visual changes are limited, reserve these tags strictly for critical narrative shifts. Use them specifically when introducing the \"Friction/Enemy\" (like inflation or taxes), when shifting between the \"Two Paths\" of the case study, or when visually revealing the final Dividend solution. Let the scenes breathe. \nExample: \n ...and that is how the wealthy actually use debt to avoid taxes. [CAMBIO DE IMAGEN] But what happens when the average consumer tries to do this? The system traps them... \n\nEXCEPTION 2 (Chapters):  \nWhenever a new section or topic begins, you MUST insert a chapter tag formatted exactly like this: [CAPITULO: Name of the chapter]. Do not add timestamps. \nExample: \n[CAPITULO: The Trap of Credit Cards] \nBanks want you to believe that... \nMANDATORY RESPONSE FORMAT (CRITICAL ORDER): \nYou MUST output your response EXACTLY in this format. Write the story FIRST, and put the metadata variables at the absolute bottom. \n[STRUCTURED STORY] \n(The complete final script in English here, strictly including your [CAMBIO DE IMAGEN] and [CAPITULO: Name] tags where appropriate) \n\n[CONTENT DNA] \n(Describe the chosen new angle and tone in one line) \n[RETENTION STRATEGY] \n(Explain in one line how you structured the script to maintain the same length without filling with empty words) \n\n[SELECTED VIDEO] \n(Write the EXACT title of the video you chose from the list. If you didn't recommend any, write exactly \"Ninguno\") \n\nSCRIPT TO ANALYZE: \n{{ $('Generar Slug Proyecto').first().json.Transcript }} "
+      },
+      "id": "6c3f16ce-cdd4-4a56-b49e-6dd33f67f173",
+      "name": "Escribir Guion Adaptado",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.4,
+      "position": [
+        2080,
+        1808
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "==Role: Act as an expert Art Director, Growth Hacker, and YouTube SEO expert for a \"faceless\" finance channel.\nTask: Read the complete script and generate BOTH the video packaging AND a chronological list of visual scene prompts in a SINGLE JSON response.\n\n--- PART 1: VIDEO PACKAGING RULES ---\nTARGET MARKET: Global English-speaking audience. Avoid regionalisms or single-country laws. Use universal financial concepts (wealth, taxes, inflation, compound interest) so it resonates across the entire English-speaking world.\nTONE: Use a natural, direct, and highly viral tone. STRICTLY AVOID robotic words, typical AI patterns, or generic marketing jargon.\n\nDELIVERABLES (EXACT JSON STRUCTURE FOR PACKAGING):\nAll values generated inside the JSON must be entirely in English.\n\n\"titulos_sugeridos\": An array of 4 viral, attractive, and high CTR titles based strictly on the provided script. \nCRITICAL RULE 1 (NICHE & AUTHORITY): AT LEAST 4 of the 4 titles MUST explicitly contain the word \"Dividend\" or \"Dividends\". IF the script features a famous financial figure (e.g., Warren Buffett, Kevin O'Leary oro any other), you MUST leverage their authority by including their exact name in the titles alongside the niche concept (e.g., \"Warren Buffett's Secret Dividend Strategy\").\nCRITICAL RULE 2: Force structural variety. Do NOT make all titles follow the \"Why X is Y\" or \"How to Z\" formula. Mix psychological triggers: one statement of blunt truth, one contrarian hook, one data-driven title.\n\n\"titulo_ganador\": \"From the 4 generated titles, select the absolute best one for maximizing CTR and curiosity. CRITICAL RULE: The selected winning title MUST explicitly contain the word 'Dividend' or 'Dividends', and MUST include the famous figure's name if one was discussed. Output ONLY that exact title here without any extra text or numbers.\"\n\n\"etiquetas\": Array of 15 relevant SEO tags for the financial niche.\n\"video_recomendado\": Look at the top of the text provided (in the metadata section). Find the tag [SELECTED VIDEO]. Extract the EXACT title written there and put it here. If it says \"Ninguno\", output \"Ninguno\".\n\n\n\"concepto_visual\": \"Professional YouTube Thumbnail Illustrator prompt for direct AI generation. INSTRUCTIONS FOR THE AI: 1. Analyze the core financial concept. 2. Invent 3 to 5 high-impact, click-worthy words summarizing the topic. 3. Fill the Master Prompt structure below EXACTLY as formatted.\nMASTER PROMPT STRUCTURE:\n'Core Aesthetic: High-end 2D vector sitcom-adult animation style, modern digital cartoon, clean uniform black outlines, vibrant flat colors, no gradients, minimal solid white background. \nText Integration: Add LARGE, MASSIVE, bold sans-serif text in black color reading \\\"[INSERT THE 3-5 HIGH-IMPACT WORDS HERE]\\\". Text must be at the top or center-right.\nCharacter: One central male Everyman (40-50% of frame). Short brown hair, extremely large rounded jowl-heavy lower face, simple curved line for a nose. Eyes: large perfect white circles with small black dots. Mouth: downturned line or oversized open with blocky teeth. Attire: [Vary based on context: flat blue long-sleeve shirt OR professional suit].\nScene Logic & Focus: [Single Focus / Two-Panel Split / Three-Panel Split]. Adapt visual elements dynamically. If the topic is financial, use financial symbols. If psychological/habit-based, use abstract metaphors (mazes, heavy burdens, empty rooms, etc etc).\nVisual Metaphor: [INVENT a UNIQUE physical action/metaphor based on the script. DO NOT copy previous examples. Use exaggerated scale].\nFinance Elements: [Add SPECIFIC symbols matching the script. AVOID REPETITION].\nArrows: [If essential, one thick solid RED/BLACK arrow].\nHighlights: Subtle red glow for danger, green glow for wealth.\nMetaphor Logic & Prohibitions: STRICTLY NO machinery, engines, or gears. STRICTLY NO proper names.\nTechnical Tags: Ultra-clean line art, 8k resolution, vector graphics, high contrast, commercial illustration style, wide shot framing.'\"\n\n\n\"descripcion\": A short, persuasive and concise 1-paragraph description. End with a highly natural, casual call to action (like, subscribe, comment, bell) WITHOUT sounding like a robot. Strictly avoid \"In this video...\" or \"Subscribe to join our community\". Write like a real human. DO NOT use \\n symbols to separate paragraphs; use normal spaces.\n\n\"nombres_capitulos\": An array of strings with logical chapter titles. EXTREME PROHIBITION: DO NOT WRITE NUMBERS, TIMESTAMPS, OR \"00:00\" INSIDE THESE STRINGS. Just the plain text words.\n\n\"escenas_visuales\": An array of strings containing the chronological list of visual scene prompts. (CRITICAL: All generated scene descriptions MUST go inside this array).\n\n\"playlist_sugerida\": \"Select the best fit from: [The Dividend Lifestyle, Market Secrets & Traps, How the Wealthy Invest, The Compound Interest Engine]. Base your choice on the NEW angle of the script, not the original title.\"\n\nPART 2: VISUAL SCENE PROMPTS RULES ---\nCRITICAL RULE FOR \"escenas_visuales\" ARRAY LENGTH:\nCount the exact number of [CAMBIO DE IMAGEN] tags in the script. You MUST generate exactly that number PLUS ONE (because the video requires an opening scene at 00:00 before the first tag appears). For example, if there are exactly 9 tags in the script, your array MUST contain exactly 10 scene prompts. DO NOT mismatch this mathematical rule.\n\nRULE OF VISUAL DENSITY (CRITICAL MINIMALISM!): \n- Balance: Focus ONLY on the visual shifts indicated by the tags. Do not saturate. A single scene must visually support the entire block of text until the next tag appears. Your prompts must flow perfectly with the spoken narrative.\n\nRULES FOR THE PROMPTS (IMAGE DESCRIPTIONS):\n- ALL PROMPTS STRICTLY IN ENGLISH: Generate all prompt descriptions (the values in the JSON) strictly in English. This is non-negotiable.\n- CHARACTER FRAMING & PROPORTIONS (CRITICAL): Characters are highly encouraged to add emotion. Whenever a person is included, they MUST be the main focal point in the absolute foreground (Close-up or Medium shot). NEVER generate tiny, distant, or landscape-scaled characters. Their expressions and actions must be large and clearly visible. \"Faceless\" means generic/unnamed, NOT the absence of prominent humans.\n- GLOBAL UNIVERSALITY: Scenarios should reflect modern, international settings. ONLY WHEN the scene requires financial elements, use universal symbols (like generic candlestick charts, unbranded banknotes or credit cards) instead of country-specific items.\n- TOTAL PROHIBITION OF PROPER NAMES: It is STRICTLY FORBIDDEN to include names of people. Use generic descriptions (e.g., \"a stressed businessman in his 30s\", \"a young couple budgeting\").\n\nCRITICAL RULE: SPECIFIC ANIMATED VISUAL STYLE:\n- Core Style: Adopt a modern, bold, professional 2D vector animated illustration style, with clean line art, flat colors, and expressive characters. The visual aesthetic must strongly resemble a high-end adult animated sitcom (similar to the Family Guy aesthetic, but with a more polished, corporate, and engaging finish).\n- Corporate/Explanatory Vibe: When explaining technical concepts (compound interest, inflation, etc etc), the characters should frequently interact with visual aids within the scene: massive glowing charts, futuristic holographic dashboards, large whiteboards with diagrams, or oversized conceptual props, etc. It depends on the content.\n- Consistency: This specific 2D vector animated style MUST be applied consistently across all generated descriptions to create a cohesive professional visual language.\n\nTEXT INTEGRATION RULE (CONTEXTUAL TEXT):\nGenerate and Place Contextual Text: When the script introduces a specific concept (e.g., 'DEBT TRAP', 'COMPOUND INTEREST'), prioritize scenes that include exact text reading that concept as a visual anchor. Use descriptions like \"reading\" or \"with a sign reading\".\n- Example: \"...a stressed individual in the absolute foreground, with a large neon sign reading \\\"DEBT TRAP\\\" in bold letters...\"\n- EXTREME PROHIBITION: DO NOT ever include scene numbers, episode numbers, or UI text (like \"Scene 1\", \"Shot 3\") in the image description. Only include valuable contextual text.\n- \"FACELESS\" & FINANCIAL FOCUS: Avoid focusing on specific faces speaking to the camera. Prioritize visual metaphors of finance, corporate architecture, lifestyle (wealth/poverty), or generic scenarios.\n\nPROMPT STRUCTURE:\n[Subject/Environment], [Action/Atmosphere], [Lighting/Colors], [Visual style: 2D vector animation, high-end adult sitcom style, clean line art, flat colors, polished aesthetic].\n\n--- FINAL STRICT FORMATTING RULE ---\nYour response MUST be ONLY a valid and raw JSON object. IT IS STRICTLY FORBIDDEN to include conversational text before or after the JSON, and DO NOT use markdown code block tags. Return only the plain text.\nPROHIBITION OF EDITING NOTES: NEVER output sections like \"TIEMPOS EXACTOS PARA EDICIÓN\" or any time-based mappings. Just output the requested JSON.\nSCRIPT TO ANALYZE:\n{{ $json.Script }}\n"
+      },
+      "id": "dd977ae2-09c9-4027-84ca-a90a1f710696",
+      "name": "Generar Empaque y Visuales",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.4,
+      "position": [
+        2592,
+        1808
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $input.first().json.output || {};\nlet packaging = data.packaging || data;\n\nlet prompts = packaging.scene_prompts || packaging.escenas_visuales || packaging.escenas || [];\nif (prompts.length === 0) {\n  for (const key in packaging) {\n    if (Array.isArray(packaging[key]) && key !== 'etiquetas' && key !== 'nombres_capitulos') {\n      if (packaging[key].length > prompts.length) {\n         prompts = packaging[key];\n      }\n    }\n  }\n}\n\nconst safeGetStr = (obj, key, fallback = 'No generado') => obj && obj[key] ? obj[key] : fallback;\nconst safeGetArr = (obj, key) => obj && Array.isArray(obj[key]) ? obj[key] : [];\n\nconst etiquetas = safeGetArr(packaging, 'etiquetas');\nconst hashtags = etiquetas.slice(0, 5).map(tag => '#' + tag.replace(/\\s+/g, '')).join(' ');\n\nlet video_rec = safeGetStr(packaging, 'video_recomendado', 'Ninguno');\nif (video_rec === 'Ninguno' || video_rec === 'None' || video_rec === 'No generado') {\n    video_rec = '(Sin video recomendado)';\n}\n\n// 1. Procesar Títulos\nconst titulos = safeGetArr(packaging, 'titulos_sugeridos');\nlet titulosTexto = \"\";\nif (titulos.length > 0) {\n  titulosTexto = titulos.map((t, i) => `${i + 1}. ${t}`).join('\\n');\n} else {\n  // Por si la IA falla y manda el título en el formato antiguo\n  titulosTexto = safeGetStr(packaging, 'titulo', 'Título no generado');\n}\n\n//Rescatar el título ganador (si falla, toma el primero de la lista por seguridad)\nlet tituloGanador = safeGetStr(packaging, 'titulo_ganador', titulos[0] || 'No generado');\n\n// 2. Archivo PACKAGING REORDENADO\nlet content = `TÍTULOS SUGERIDOS:\\n${titulosTexto}\\n\\n`;\ncontent += `TÍTULO GANADOR (Elegido por IA): ${tituloGanador}\\n\\n`;\ncontent += `DESCRIPCIÓN:\\n${safeGetStr(packaging, 'descripcion')}\\n\\n${hashtags}\\n\\n`;\ncontent += `ETIQUETAS: ${etiquetas.length > 0 ? etiquetas.join(', ') : 'No generadas'}\\n\\n`;\ncontent += `VIDEO RECOMENDADO: ${video_rec}\\n\\n`;\ncontent += `PLAYLIST SUGERIDA: ${packaging.playlist_sugerida || packaging.suggested_playlist || 'Revisar manualmente'}\\n\\n`;\n\n// 3. Archivo PROMPTS\nlet promptsContent = \"\";\nlet thumbPrompt = safeGetStr(packaging, 'concepto_visual', '');\nif (thumbPrompt !== 'No generado') promptsContent += thumbPrompt.trim() + \"\\n\\n\";\n\nif (Array.isArray(prompts) && prompts.length > 0) {\n  prompts.forEach((p) => {\n    let promptText = typeof p === 'string' ? p : (p.prompt || p.descripcion || p.image_prompt || JSON.stringify(p));\n    promptsContent += promptText.trim() + \"\\n\\n\";\n  });\n} else {\n  promptsContent += \"No se encontraron descripciones de escenas.\\n\";\n}\n\nconst jsonSalida = $input.first().json;\n// Inyectamos el título ganador seguro en el JSON para que NocoDB lo pueda leer\njsonSalida.titulo_ganador_seguro = tituloGanador;\n\nreturn [{\n  json: jsonSalida,\n  binary: {\n    data: {\n      data: Buffer.from(content.trim(), 'utf8').toString('base64'),\n      mimeType: 'text/plain',\n      fileName: 'packaging.txt'\n    },\n    prompts_bin: {\n      data: Buffer.from(promptsContent.trim(), 'utf8').toString('base64'),\n      mimeType: 'text/plain',\n      fileName: 'prompts_imágenes.txt'\n    }\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3264,
+        1808
+      ],
+      "id": "ce584e6b-733c-4ece-921d-6bacb7870b31",
+      "name": "Separar Packaging y Prompts"
+    },
+    {
+      "parameters": {
+        "fileName": "=C:/Users/efrai/.n8n-files/{{ $('Generar Slug Proyecto').first().json.sluggified }}-prompts.txt",
+        "dataPropertyName": "prompts_bin",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.writeBinaryFile",
+      "typeVersion": 1,
+      "position": [
+        3696,
+        1808
+      ],
+      "id": "0bac98c0-c564-4b88-8e35-d3981254a3b3",
+      "name": "Guardar Prompts Temporal"
+    },
+    {
+      "parameters": {
+        "command": "=E:/AutomacionYouTube/entorno_produccion/Scripts/python.exe -c \"import shutil; shutil.move('C:/Users/efrai/.n8n-files/{{ $('Generar Slug Proyecto').first().json.sluggified }}-prompts.txt', r'{{ $('Ajustes Globales').first().json['Videos Folder Path'] }}/{{ $('Generar Slug Proyecto').first().json.sluggified }}/prompts_imagenes.txt')\""
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        4144,
+        1808
+      ],
+      "id": "ee8b6d9b-ba51-40c8-8fb3-5a0e846d4e84",
+      "name": "Mover Prompts a Proyecto"
+    },
+    {
+      "parameters": {
+        "content": "## 📦 4. Empaquetado Final (Packaging, Prompts y TXTs)\nGenera el empaque, separa los prompts limpios para AutoWhisk, actualiza NocoDB y guarda el guion definitivo.",
+        "height": 472,
+        "width": 2080,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        3200,
+        1648
+      ],
+      "id": "abe8a15d-4f30-4712-b924-2faafa66d265",
+      "name": "Sticky Note9"
+    },
+    {
+      "parameters": {
+        "command": "=E:/AutomacionYouTube/entorno_produccion/Scripts/python.exe -c \"import shutil; shutil.move('C:/Users/efrai/.n8n-files/{{ $('Generar Slug Proyecto').first().json.sluggified }}-packaging.txt', r'{{ $('Ajustes Globales').first().json['Videos Folder Path'] }}/{{ $('Generar Slug Proyecto').first().json.sluggified }}/packaging.txt')\""
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        3904,
+        1808
+      ],
+      "id": "147ece5d-fcdd-491b-94ad-de5f744a34ec",
+      "name": "Mover Packaging a Proyecto"
+    },
+    {
+      "parameters": {
+        "authentication": "nocoDbApiToken",
+        "operation": "update",
+        "projectId": "={{ $('Ajustes Globales').first().json['Channel Base Name'] }}",
+        "table": "={{ $('Ajustes Globales').first().json['Channel Table Name'] }}",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldName": "Id",
+              "fieldValue": "={{ $('Seleccionar Primer Video').first().json.Id }}"
+            },
+            {
+              "fieldName": "Video Packaging",
+              "fieldValue": "={{ $('Ajustes Globales').first().json['Videos Folder Path'] }}/{{ $('Generar Slug Proyecto').first().json.sluggified }}/packaging.txt"
+            },
+            {
+              "fieldName": "Nuevo Titulo",
+              "fieldValue": "={{ $('Separar Packaging y Prompts').first().json.titulo_ganador_seguro }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.nocoDb",
+      "typeVersion": 3,
+      "position": [
+        4336,
+        1808
+      ],
+      "id": "0d6431cd-7e78-4411-b57d-c270a0d3fd95",
+      "name": "Actualizar Packaging NocoDB",
+      "credentials": {
+        "nocoDbApiToken": {
+          "id": "rUmU1Zd9NF5Xglqp",
+          "name": "NocoDB Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fileName": "=C:/Users/efrai/.n8n-files/{{ $('Generar Slug Proyecto').first().json.sluggified }}-script.txt",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.writeBinaryFile",
+      "typeVersion": 1,
+      "position": [
+        4752,
+        1808
+      ],
+      "id": "8afebd4e-2fa4-487d-80f3-6ff2d9998be5",
+      "name": "Guardar Guion Temporal"
+    },
+    {
+      "parameters": {
+        "command": "=E:/AutomacionYouTube/entorno_produccion/Scripts/python.exe -c \"import shutil; shutil.move('C:/Users/efrai/.n8n-files/{{ $('Generar Slug Proyecto').first().json.sluggified }}-script.txt', r'{{ $('Ajustes Globales').first().json['Videos Folder Path'] }}/{{ $('Generar Slug Proyecto').first().json.sluggified }}/script.txt')\""
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        4960,
+        1808
+      ],
+      "id": "351f39ea-7388-4f5f-af7a-f933b67d0082",
+      "name": "Mover Guion a Proyecto"
+    },
+    {
+      "parameters": {
+        "fileName": "=C:/Users/efrai/.n8n-files/{{ $('Generar Slug Proyecto').first().json.sluggified }}-packaging.txt",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.writeBinaryFile",
+      "typeVersion": 1,
+      "position": [
+        3472,
+        1808
+      ],
+      "id": "36cfa21d-a255-411e-8422-c09d4d546c06",
+      "name": "Guardar Packaging Temporal"
+    },
+    {
+      "parameters": {
+        "jsCode": "function sluggify(str) {\n  if (!str) return 'proyecto-sin-titulo';\n  str = str.toLowerCase().trim();\n  str = str.normalize(\"NFD\").replace(/[\\u0300-\\u036f]/g, \"\");\n  str = str.replace(/[^\\w\\s-]/g, '').replace(/[\\s_]+/g, '-').replace(/^-+|-+$/g, '');\n  return str;\n}\n\n// Rescatamos el título original extraído al principio\nconst tituloYoutube = $('Obtener Info Video YT').first().json.title;\nconst data = $input.first().json;\n\nlet transcriptFinal = \"\";\n\n// Intentamos sacar el texto de Python\ntry {\n  transcriptFinal = $('Verificar Python').first().json.Transcript;\n} catch (error) { }\n\n// Si no hay texto, intentamos sacarlo de Apify\nif (!transcriptFinal) {\n  try {\n    transcriptFinal = $('Verificar Apify').first().json.Transcript;\n  } catch (error) { }\n}\n\n// AQUÍ ESTÁ EL TRUCO DE LA NUMERACIÓN\n// Rescatamos el ID numérico de tu base de datos\nlet idVideo = \"0\";\ntry {\n  idVideo = $('Seleccionar Primer Video').first().json.Id;\n} catch(e) { }\n\n// Generamos el texto limpio y le pegamos el número al inicio\nconst slugBase = sluggify(tituloYoutube);\ndata.sluggified = `${idVideo}-${slugBase}`; // Quedará como \"15-el-titulo-del-video\"\n\n// Guardamos la transcripción y reconstruimos la metadata esencial\ndata.Transcript = transcriptFinal || \"\";\ndata.title = tituloYoutube;\n\n// Rescatar URL del primer nodo\ntry {\n  data['Source Video URL'] = $('Seleccionar Primer Video').first().json['Source Video URL'];\n} catch(e) { }\n\nreturn [{ json: data }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -32,
+        1824
+      ],
+      "id": "3b551851-4afd-475d-a45b-605344623bdb",
+      "name": "Generar Slug Proyecto"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "==Role: You are an expert Executive Producer for a \"Faceless\" 2D animation YouTube channel (Whiteboard/Corporate Sitcom style).\nYour job is to act as the ultimate filter (Gatekeeper).\n\nAnalyze the following video title and original transcript:\n\nTITLE: \"{{ $json.title }}\"\nTRANSCRIPT:\n{{ $json.Transcript }}\n\nYOUR TASK:\nRead the content and determine if there is a core foundational lesson (concept, psychology, history, or strategy) that can be repackaged and explained using 2D animations and visual metaphors.\n\nREJECT (false) IF:\n- It is a 100% screen-dependent technical tutorial (e.g., the presenter says \"click here\", \"look at this Excel cell\", \"as you see on my screen\", \"go to this menu\").\n- It is impossible to understand the context without visually watching the original video.\n- It is highly temporary, ephemeral news, or severely outdated data (e.g., \"Market crash today\") that CANNOT be generalized into a timeless lesson.\n- It is hyper-localized to a specific regional market outside our high-CPM target (e.g., local Indian banking apps, specific Latin American tax laws, regional politics) AND lacks a broad universal economic principle.\n\n\nAPPROVE (true) IF:\n- The script explains universal financial concepts (ETFs, dividends, crypto, etc.), habits, company histories, or psychological rules.\n- The content analyzes the timeless strategies, philosophies, or historical mistakes of famous financial figures (e.g., Warren Buffett, Ray Dalio, etc), even if it references specific past trades, as long as the core lesson is evergreen.\n- Even if the title sounds like a tutorial, the actual content is theoretical or strategic and can be easily explained with a voiceover and animations without needing screen recordings.\n- The content contains older statistics or specific stock picks, BUT the underlying economic mechanics or strategy can still be extracted and taught today (Evergreen potential).\n\n\nRESPONSE FORMAT:\nReturn ONLY a valid JSON object with your verdict. Zero conversational text.\n{\n  \"es_valido_para_animacion_2d\": true\n}\n"
+      },
+      "id": "855803c5-97d2-4187-ae3c-0825ba69088d",
+      "name": "Filtro IA (Análisis de Guion)",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.4,
+      "position": [
+        208,
+        1824
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// 1. Tomar la respuesta cruda del LLM\nconst jsonOriginal = $input.first().json;\nlet text = jsonOriginal.text || jsonOriginal.output || '';\n\n// 2. Extraer el JSON limpio\nlet jsonStr = text;\nconst jsonMatch = text.match(/\\{[\\s\\S]*\\}/);\nif (jsonMatch) {\n    jsonStr = jsonMatch[0];\n}\n\nlet es_valido = false;\ntry {\n  const parsed = JSON.parse(jsonStr);\n  es_valido = parsed.es_valido_para_animacion_2d === true || parsed.es_valido_para_animacion_2d === \"true\";\n} catch (error) {\n  es_valido = false; // Ante la duda, descartar\n}\n\n// 3. ¡EL TRUCO MAESTRO! Recuperamos todos los datos (Slug, URL, Guion)\n// que el nodo de LangChain eliminó.\nconst datosCompletos = $('Generar Slug Proyecto').first().json;\n\n// 4. Le inyectamos el veredicto\ndatosCompletos.es_valido = es_valido;\n\nreturn [{ json: datosCompletos }];\n"
+      },
+      "id": "641aa886-64d0-4fb7-b37e-ab7c1918cc84",
+      "name": "Parsear Veredicto",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        528,
+        1824
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "cond-es-valido",
+              "leftValue": "={{ $json.es_valido }}",
+              "rightValue": "true",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "de050382-c8a9-4049-803e-d4f12e77c0f7",
+      "name": "¿Guion Adaptable?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        752,
+        1824
+      ]
+    },
+    {
+      "parameters": {
+        "authentication": "nocoDbApiToken",
+        "operation": "update",
+        "projectId": "={{ $('Ajustes Globales').first().json['Channel Base Name'] }}",
+        "table": "={{ $('Ajustes Globales').first().json['Channel Table Name'] }}",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldName": "Id",
+              "fieldValue": "={{ $('Seleccionar Primer Video').first().json.Id }}"
+            },
+            {
+              "fieldName": "Status",
+              "fieldValue": "Descartado (Guion No Adaptable)"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.nocoDb",
+      "typeVersion": 3,
+      "position": [
+        960,
+        2032
+      ],
+      "id": "b0a2ab0c-9ba7-4a16-a97b-084a23ca1b63",
+      "name": "Descartar en NocoDB",
+      "credentials": {
+        "nocoDbApiToken": {
+          "id": "rUmU1Zd9NF5Xglqp",
+          "name": "NocoDB Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-3.1-flash-lite-preview",
+        "options": {}
+      },
+      "id": "2169b3bc-c454-4502-9b9d-1da5a211649b",
+      "name": "Filtro",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        208,
+        2080
+      ],
+      "credentials": {
+        "googlePalmApi": {
+          "id": "qFawBpyYlxYNKO25",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-3-flash-preview",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        2592,
+        2240
+      ],
+      "id": "d300135a-0cb0-44a6-9440-9b3031be52cd",
+      "name": "Gemini 3.1 flash",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "qFawBpyYlxYNKO25",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "nocoDbApiToken",
+        "operation": "update",
+        "projectId": "={{ $('Ajustes Globales').first().json['Channel Base Name'] }}",
+        "table": "={{ $('Ajustes Globales').first().json['Channel Table Name'] }}",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldName": "Id",
+              "fieldValue": "={{ $('Seleccionar Primer Video').first().json.Id }}"
+            },
+            {
+              "fieldName": "Script",
+              "fieldValue": "={{ $('Ajustes Globales').first().json['Videos Folder Path'] }}/{{ $('Generar Slug Proyecto').first().json.sluggified }}/script.txt"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.nocoDb",
+      "typeVersion": 3,
+      "position": [
+        5152,
+        1808
+      ],
+      "id": "2f1808aa-914c-47a0-94ee-3b5fb6c6a114",
+      "name": "Actualizar Guion NocoDB",
+      "credentials": {
+        "nocoDbApiToken": {
+          "id": "rUmU1Zd9NF5Xglqp",
+          "name": "NocoDB Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "nocoDbApiToken",
+        "operation": "update",
+        "projectId": "={{ $('Ajustes Globales').first().json['Channel Base Name'] }}",
+        "table": "={{ $('Ajustes Globales').first().json['Channel Table Name'] }}",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldName": "Id",
+              "fieldValue": "={{ $('Seleccionar Primer Video').first().json.Id }}"
+            },
+            {
+              "fieldName": "Status",
+              "fieldValue": "Hecho"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.nocoDb",
+      "typeVersion": 3,
+      "position": [
+        6272,
+        2112
+      ],
+      "id": "79158072-c6f8-451a-9f6a-9c76007cc4bf",
+      "name": "Marcar Como Hecho 2",
+      "credentials": {
+        "nocoDbApiToken": {
+          "id": "rUmU1Zd9NF5Xglqp",
+          "name": "NocoDB Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "nocoDbApiToken",
+        "operation": "update",
+        "projectId": "={{ $('Ajustes Globales').first().json['Channel Base Name'] }}",
+        "table": "={{ $('Ajustes Globales').first().json['Channel Table Name'] }}",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldName": "Id",
+              "fieldValue": "={{ $('Seleccionar Primer Video').first().json.Id }}"
+            },
+            {
+              "fieldName": "Status",
+              "fieldValue": "Hecho"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.nocoDb",
+      "typeVersion": 3,
+      "position": [
+        6512,
+        1792
+      ],
+      "id": "9bd791cc-9972-4396-919a-031566176095",
+      "name": "Marcar Como Hecho 1",
+      "credentials": {
+        "nocoDbApiToken": {
+          "id": "rUmU1Zd9NF5Xglqp",
+          "name": "NocoDB Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "nocoDbApiToken",
+        "operation": "getAll",
+        "projectId": "={{ $('Ajustes Globales').first().json['Channel Base Name'] }}",
+        "table": "={{ $('Ajustes Globales').first().json['Channel Table Name'] }}",
+        "returnAll": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.nocoDb",
+      "typeVersion": 3,
+      "position": [
+        1648,
+        1808
+      ],
+      "id": "20855360-802b-4f81-a75d-f259d644528e",
+      "name": "Obtener Hechos NocoDB",
+      "credentials": {
+        "nocoDbApiToken": {
+          "id": "rUmU1Zd9NF5Xglqp",
+          "name": "NocoDB Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const allVideos = $input.all().map(item => item.json);\n\n// Filtrar solo los videos que están listos, eliminamos la regla del check\nconst disponibles = allVideos.filter(v => v.Status === 'Hecho');\n\n// Ordenar del más nuevo al más viejo asumiendo que un Id mayor es más reciente\ndisponibles.sort((a, b) => b.Id - a.Id);\n\n// Tomar los 15 más recientes\nconst recientes = disponibles.slice(0, 15);\n\n// Mezclar esos 15 para que la IA no reciba siempre el mismo orden exacto\nfor (let i = recientes.length - 1; i > 0; i--) {\n  const j = Math.floor(Math.random() * (i + 1));\n  [recientes[i], recientes[j]] = [recientes[j], recientes[i]];\n}\n\n// Extraer los títulos en texto plano\nlet titulos_texto = \"No hay videos disponibles\";\nif (recientes.length > 0) {\n  titulos_texto = recientes.map(v => \"- \" + (v[\"Nuevo Titulo\"] || v[\"Titulo Original\"] || v.title)).join('\\n');\n}\n\nreturn [{\n  json: {\n    seleccionados: recientes,\n    titulos_texto: titulos_texto\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1856,
+        1808
+      ],
+      "id": "309d1fcb-d7a6-470c-b1a4-ae1c1602488a",
+      "name": "Seleccionar Videos Disponibles"
+    },
+    {
+      "parameters": {
+        "jsCode": "let script = \"\";\ntry {\n  // AQUÍ ESTÁ EL CAMBIO CLAVE: Jalamos ScriptLimpio para que el TXT no tenga basura\n  script = $('Extraer Texto Guion').first().json.ScriptLimpio || '';\n} catch(error) {\n  script = \"Error: No se pudo encontrar el texto del guion en el nodo 'Extraer Texto Guion'.\";\n}\n\nscript = script.replace(/\\\\n/g, '\\n').replace(/(?:\\r\\n|\\r|\\n)/g, '\\r\\n');\nconst buffer = Buffer.from(script, 'utf8');\n\nreturn[{\n  json: $input.first().json,\n  binary: {\n    data: {\n      data: buffer.toString('base64'),\n      mimeType: 'text/plain',\n      fileName: 'script.txt'\n    }\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4544,
+        1808
+      ],
+      "id": "a814a41e-87db-46a4-9001-0c89c31fa1c1",
+      "name": "Crear Archivo Guion TXT"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Ajustes Globales": {
+      "main": [
+        [
+          {
+            "node": "Obtener Filas NocoDB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Obtener Filas NocoDB": {
+      "main": [
+        [
+          {
+            "node": "Filtrar Pendientes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Seleccionar Primer Video": {
+      "main": [
+        [
+          {
+            "node": "Marcar Procesando",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Crear Carpetas Proyecto": {
+      "main": [
+        [
+          {
+            "node": "Guardar Ruta Proyecto NocoDB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generar Subtítulos": {
+      "main": [
+        [
+          {
+            "node": "Transcribir con Whisper",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Marcar Como Hecho 2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transcribir con Whisper": {
+      "main": [
+        [
+          {
+            "node": "Marcar Como Hecho 1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Iniciar Producción": {
+      "main": [
+        [
+          {
+            "node": "Ajustes Globales",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Apify Transcript": {
+      "main": [
+        [
+          {
+            "node": "Parsear Dataset Apify",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Marcar Procesando": {
+      "main": [
+        [
+          {
+            "node": "Extraer Subtitulos Originales",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extraer Subtitulos Originales": {
+      "main": [
+        [
+          {
+            "node": "Parsear Subtitulos JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parsear Subtitulos JSON": {
+      "main": [
+        [
+          {
+            "node": "Verificar Python",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parsear Dataset Apify": {
+      "main": [
+        [
+          {
+            "node": "Verificar Apify",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verificar Apify": {
+      "main": [
+        [
+          {
+            "node": "Obtener Info Video YT",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Reportar Error NocoDB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Obtener Info Video YT": {
+      "main": [
+        [
+          {
+            "node": "Generar Slug Proyecto",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger (Cada 8 min)": {
+      "main": [
+        [
+          {
+            "node": "Ajustes Globales",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filtrar Pendientes": {
+      "main": [
+        [
+          {
+            "node": "Seleccionar Primer Video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verificar Python": {
+      "main": [
+        [
+          {
+            "node": "Obtener Info Video YT",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Apify Transcript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Guardar Ruta Proyecto NocoDB": {
+      "main": [
+        [
+          {
+            "node": "Obtener Hechos NocoDB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "limpiador": {
+      "main": [
+        [
+          {
+            "node": "Separar Packaging y Prompts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extraer Texto Guion": {
+      "main": [
+        [
+          {
+            "node": "Generar Empaque y Visuales",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generar Voz Kokoro Local": {
+      "main": [
+        [
+          {
+            "node": "Generar Subtítulos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Escribir Guion Adaptado": {
+      "main": [
+        [
+          {
+            "node": "Extraer Texto Guion",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generar Empaque y Visuales": {
+      "main": [
+        [
+          {
+            "node": "limpiador",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Separar Packaging y Prompts": {
+      "main": [
+        [
+          {
+            "node": "Guardar Packaging Temporal",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Guardar Prompts Temporal": {
+      "main": [
+        [
+          {
+            "node": "Mover Packaging a Proyecto",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mover Prompts a Proyecto": {
+      "main": [
+        [
+          {
+            "node": "Actualizar Packaging NocoDB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mover Packaging a Proyecto": {
+      "main": [
+        [
+          {
+            "node": "Mover Prompts a Proyecto",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Actualizar Packaging NocoDB": {
+      "main": [
+        [
+          {
+            "node": "Crear Archivo Guion TXT",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Guardar Guion Temporal": {
+      "main": [
+        [
+          {
+            "node": "Mover Guion a Proyecto",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mover Guion a Proyecto": {
+      "main": [
+        [
+          {
+            "node": "Actualizar Guion NocoDB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Guardar Packaging Temporal": {
+      "main": [
+        [
+          {
+            "node": "Guardar Prompts Temporal",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generar Slug Proyecto": {
+      "main": [
+        [
+          {
+            "node": "Filtro IA (Análisis de Guion)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filtro IA (Análisis de Guion)": {
+      "main": [
+        [
+          {
+            "node": "Parsear Veredicto",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parsear Veredicto": {
+      "main": [
+        [
+          {
+            "node": "¿Guion Adaptable?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Guion Adaptable?": {
+      "main": [
+        [
+          {
+            "node": "Crear Carpetas Proyecto",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Descartar en NocoDB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filtro": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Filtro IA (Análisis de Guion)",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini 3.1 flash": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Escribir Guion Adaptado",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Generar Empaque y Visuales",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Actualizar Guion NocoDB": {
+      "main": [
+        [
+          {
+            "node": "Generar Voz Kokoro Local",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Obtener Hechos NocoDB": {
+      "main": [
+        [
+          {
+            "node": "Seleccionar Videos Disponibles",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Seleccionar Videos Disponibles": {
+      "main": [
+        [
+          {
+            "node": "Escribir Guion Adaptado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Crear Archivo Guion TXT": {
+      "main": [
+        [
+          {
+            "node": "Guardar Guion Temporal",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "348d0755-e1b8-4db6-b80f-2520f5ccd0c0",
+  "meta": {
+    "instanceId": "d383f2fa52875a58e976488c620efb0ceae0645bf6518ffe737901c3054d2c20"
+  },
+  "id": "w3Qp3cC9tLSOMq1a",
+  "tags": []
+}
